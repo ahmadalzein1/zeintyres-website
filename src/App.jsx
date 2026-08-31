@@ -22,6 +22,17 @@ import logoDark from './assets/darkmode.png'
 import logoLight from './assets/lightmode.png'
 import shopPhoto from './assets/download.jpg'
 
+// Single source of truth for the shop's phone number. It used to be spelled
+// out in five places, which is how the displayed number (03 436 172) and the
+// dialled one (+961 70 436 172) drifted apart.
+const PHONE = {
+  local: '03 436 172',        // as shown to visitors
+  intl: '+961 3 436 172',     // international, for the WhatsApp row
+  e164: '9613436172',         // digits only, for tel: and wa.me
+}
+
+const EMAIL = 'zeintires@gmail.com'
+
 // Facebook Logo Component
 const FacebookLogo = ({ size = 40 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -50,10 +61,8 @@ const translations = {
     whatsappBtn: 'WhatsApp Now',
     open24: '24/7 Open',
     alwaysReady: 'Always Ready',
-    phone: '03 436 172',
     callWhatsapp: 'Call & WhatsApp',
     emailUs: 'Email Us',
-    email: 'zeintires@gmail.com',
     fullService: 'Full Service',
     allInOne: 'All in One',
     ourServices: 'Our Services',
@@ -117,10 +126,8 @@ const translations = {
     whatsappBtn: 'واتس أب الآن',
     open24: 'مفتوح 24/7',
     alwaysReady: 'جاهز دائماً',
-    phone: '03 436 172',
     callWhatsapp: 'اتصل أو واتس أب',
     emailUs: 'راسلنا بالبريد',
-    email: 'zeintires@gmail.com',
     fullService: 'خدمات شاملة',
     allInOne: 'الكل في واحد',
     ourServices: 'خدماتنا',
@@ -238,7 +245,7 @@ function App() {
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent('Hi Zein Tyres! I need tire services.')
-    window.open(`https://wa.me/96170436172?text=${message}`, '_blank')
+    window.open(`https://wa.me/${PHONE.e164}?text=${message}`, '_blank')
   }
 
   return (
@@ -328,13 +335,13 @@ function App() {
         </div>
         <div className="info-card">
           <Phone className="icon" size={32} />
-          <h3><a href="tel:+96170436172" className="info-link">{t.phone}</a></h3>
+          <h3><a href={`tel:+${PHONE.e164}`} className="info-link">{PHONE.local}</a></h3>
           <p>{t.callWhatsapp}</p>
         </div>
         <div className="info-card">
           <Mail className="icon" size={32} />
           <h3>{t.emailUs}</h3>
-          <p><a href="mailto:zeintires@gmail.com" className="info-link">{t.email}</a></p>
+          <p><a href={`mailto:${EMAIL}`} className="info-link">{EMAIL}</a></p>
         </div>
         <div className="info-card">
           <Wrench className="icon" size={32} />
@@ -458,17 +465,17 @@ function App() {
           <div className="contact-info">
             <div className="contact-item">
               <h3><Phone size={24} className="contact-icon" /> {t.phoneLabel}</h3>
-              <a href="tel:+96170436172">03 436 172</a>
+              <a href={`tel:+${PHONE.e164}`}>{PHONE.local}</a>
             </div>
             <div className="contact-item">
               <h3><MessageCircle size={24} className="contact-icon" /> {t.whatsappLabel}</h3>
               <button onClick={handleWhatsApp} className="link-button">
-                +961 70 436 172
+                {PHONE.intl}
               </button>
             </div>
             <div className="contact-item">
               <h3><Mail size={24} className="contact-icon" /> {t.emailLabel}</h3>
-              <a href="mailto:zeintires@gmail.com">zeintires@gmail.com</a>
+              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
             </div>
             <div className="contact-item">
               <h3><MapPin size={24} className="contact-icon" /> {t.locationLabel}</h3>
