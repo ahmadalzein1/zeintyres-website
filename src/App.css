@@ -15,6 +15,12 @@
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
+  /* Height of the fixed navbar. Sections and the hero offset themselves by
+     this, so it must be kept in sync with the navbar padding + logo size
+     at every breakpoint. */
+  --nav-h: 92px;
+  /* Horizontal page gutter, tightened on small screens. */
+  --gutter: 2rem;
 }
 
 :root[data-theme='dark'] {
@@ -33,12 +39,50 @@ html, body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: var(--transition);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Belt and braces against sideways scroll on phones: a single overflowing
+     child used to be able to push the whole page wider than the viewport. */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Anchor links must not land under the fixed navbar. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Freeze the page behind the open mobile menu. */
+body.menu-open {
+  overflow: hidden;
 }
 
 .app {
   min-height: 100vh;
-  overflow-x: hidden;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+/* Nothing should be able to spill sideways: long words, unbroken phone
+   numbers and Arabic strings all wrap instead of widening the page. */
+.app :where(h1, h2, h3, p, a, span, button) {
+  overflow-wrap: break-word;
+}
+
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
 }
 
 /* RTL Support */
@@ -58,16 +102,22 @@ html[dir="rtl"] .navbar-buttons {
   flex-direction: row-reverse;
 }
 
-html[dir="rtl"] .hero {
-  grid-template-columns: 1fr 1fr;
+/* NOTE: these RTL rules out-specify the plain `.hero` / `.hero-buttons`
+   selectors inside the media queries below, so anything they set would win on
+   mobile too. Keep every layout-flipping RTL rule behind a min-width query so
+   the phone layout stays in control. */
+@media (min-width: 769px) {
+  html[dir="rtl"] .hero {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  html[dir="rtl"] .hero-buttons {
+    justify-content: flex-end;
+  }
 }
 
 html[dir="rtl"] .hero-content {
   text-align: right;
-}
-
-html[dir="rtl"] .hero-buttons {
-  justify-content: flex-end;
 }
 
 html[dir="rtl"] .section-header {
@@ -102,20 +152,31 @@ html[dir="rtl"] .contact-item {
   backdrop-filter: blur(10px);
 }
 
+/* The open drawer needs a fully opaque backdrop even at scroll position 0 —
+   at 0.95 alpha the hero text ghosts through behind the menu items. */
+.navbar.menu-open {
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: none;
+}
+
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 var(--gutter);
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .logo-section {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .logo {
@@ -124,6 +185,7 @@ html[dir="rtl"] .contact-item {
   max-height: 60px;
   object-fit: contain;
   object-position: center;
+  flex-shrink: 0;
 }
 
 .brand-name {
@@ -131,6 +193,7 @@ html[dir="rtl"] .contact-item {
   font-weight: bold;
   color: var(--secondary-color);
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .nav-links {
@@ -147,10 +210,6 @@ html[dir="rtl"] .contact-item {
   position: relative;
 }
 
-.nav-links a:hover {
-  color: var(--secondary-color);
-}
-
 .nav-links a::after {
   content: '';
   position: absolute;
@@ -162,14 +221,21 @@ html[dir="rtl"] .contact-item {
   transition: width 0.3s ease;
 }
 
-.nav-links a:hover::after {
-  width: 100%;
+@media (hover: hover) {
+  .nav-links a:hover {
+    color: var(--secondary-color);
+  }
+
+  .nav-links a:hover::after {
+    width: 100%;
+  }
 }
 
 .navbar-buttons {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .language-toggle {
@@ -183,20 +249,16 @@ html[dir="rtl"] .contact-item {
   font-weight: 600;
   transition: var(--transition);
   min-width: 100px;
-}
-
-.language-toggle:hover {
-  background-color: var(--secondary-color);
-  color: var(--bg-color);
-  transform: scale(1.05);
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .theme-toggle {
   background: none;
   border: 2px solid var(--secondary-color);
   color: var(--text-color);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
   font-size: 1.2rem;
@@ -204,17 +266,98 @@ html[dir="rtl"] .contact-item {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
-.theme-toggle:hover {
-  background-color: var(--secondary-color);
-  transform: scale(1.1);
+/* Hamburger — desktop-hidden, shown at the same breakpoint that hides
+   .nav-links so the sections are never unreachable. */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 2px solid var(--secondary-color);
+  color: var(--text-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+/* Slide-down mobile menu */
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  padding: 0.5rem var(--gutter) 1rem;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mobile-nav a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.9rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.mobile-nav a:last-child {
+  border-bottom: none;
+}
+
+.mobile-nav a:active {
+  color: var(--secondary-color);
+  background-color: rgba(220, 20, 60, 0.08);
+}
+
+html[dir="rtl"] .mobile-nav a {
+  text-align: right;
+}
+
+/* Tap-anywhere-to-close layer behind the open menu. */
+.nav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  border: none;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .language-toggle:hover {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    transform: scale(1.05);
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.1);
+  }
+
+  .nav-toggle:hover {
+    background-color: var(--secondary-color);
+    color: var(--accent-color);
+  }
+
+  .mobile-nav a:hover {
+    color: var(--secondary-color);
+  }
 }
 
 /* Hero Section */
 .hero {
-  margin-top: 80px;
-  padding: 4rem 2rem;
+  margin-top: var(--nav-h);
+  padding: 4rem var(--gutter);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
@@ -226,7 +369,7 @@ html[dir="rtl"] .contact-item {
 }
 
 .hero-content h2 {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3.2vw, 1.2rem);
   color: var(--secondary-color);
   margin-bottom: 0.5rem;
   letter-spacing: 2px;
@@ -234,7 +377,7 @@ html[dir="rtl"] .contact-item {
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: clamp(2.25rem, 9vw, 4rem);
   font-weight: bold;
   color: var(--primary-color);
   margin-bottom: 1rem;
@@ -254,14 +397,14 @@ html[dir="rtl"] .contact-item {
 }
 
 .hero-tagline {
-  font-size: 1.5rem;
+  font-size: clamp(1.05rem, 4vw, 1.5rem);
   color: var(--text-color);
   margin-bottom: 1rem;
   font-weight: 600;
 }
 
 .hero-description {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 3.2vw, 1.1rem);
   color: var(--text-color);
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -276,6 +419,7 @@ html[dir="rtl"] .contact-item {
 
 .btn {
   padding: 1rem 2rem;
+  min-height: 48px;
   font-size: 1.1rem;
   border: none;
   border-radius: 8px;
@@ -283,7 +427,10 @@ html[dir="rtl"] .contact-item {
   font-weight: 600;
   transition: var(--transition);
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
 }
 
 .btn-primary {
@@ -292,21 +439,29 @@ html[dir="rtl"] .contact-item {
   box-shadow: var(--shadow-lg);
 }
 
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(220, 20, 60, 0.4);
-}
-
 .btn-secondary {
   background-color: transparent;
   color: var(--secondary-color);
   border: 2px solid var(--secondary-color);
 }
 
-.btn-secondary:hover {
-  background-color: var(--secondary-color);
-  color: var(--accent-color);
-  transform: translateY(-3px);
+/* Touch devices keep :hover styles stuck after a tap, so lift-on-hover
+   effects are gated to real pointers and replaced by :active feedback. */
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(220, 20, 60, 0.4);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--secondary-color);
+    color: var(--accent-color);
+    transform: translateY(-3px);
+  }
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .location-badge {
@@ -330,21 +485,24 @@ html[dir="rtl"] .contact-item {
   object-fit: cover;
 }
 
-.hero-image:hover img {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .hero-image:hover img {
+    transform: scale(1.05);
+  }
 }
 
 /* Quick Info Bar */
 .quick-info {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  /* min() keeps the track from demanding 250px on a 320px-wide phone,
+     which is what forced the old horizontal overflow. */
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
   gap: 2rem;
-  padding: 4rem 2rem;
+  padding: 4rem var(--gutter);
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 4rem;
   background: linear-gradient(135deg, var(--secondary-color), rgba(220, 20, 60, 0.8));
   border-radius: 12px;
-  margin-bottom: 4rem;
 }
 
 .info-card {
@@ -353,8 +511,10 @@ html[dir="rtl"] .contact-item {
   transition: var(--transition);
 }
 
-.info-card:hover {
-  transform: translateY(-5px);
+@media (hover: hover) {
+  .info-card:hover {
+    transform: translateY(-5px);
+  }
 }
 
 .info-card .icon {
@@ -374,12 +534,35 @@ html[dir="rtl"] .contact-item {
   opacity: 0.95;
 }
 
+/* Tap-to-call / tap-to-email straight from the info bar. */
+.info-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.info-link:active {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+@media (hover: hover) {
+  .info-link:hover {
+    text-decoration: underline;
+  }
+}
+
 /* Section Styling */
 .services,
 .gallery,
 .testimonials,
 .contact {
-  padding: 4rem 2rem;
+  padding: 4rem var(--gutter);
   max-width: 1200px;
   margin: 0 auto 4rem;
 }
@@ -390,7 +573,7 @@ html[dir="rtl"] .contact-item {
 }
 
 .section-header h2 {
-  font-size: 2.5rem;
+  font-size: clamp(1.65rem, 6vw, 2.5rem);
   margin-bottom: 1rem;
   color: var(--primary-color);
 }
@@ -408,7 +591,7 @@ html[dir="rtl"] .contact-item {
 /* Services Section */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 2rem;
 }
 
@@ -427,9 +610,11 @@ html[dir="rtl"] .contact-item {
   color: var(--accent-color);
 }
 
-.service-card:hover {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .service-icon {
@@ -452,7 +637,7 @@ html[dir="rtl"] .contact-item {
 /* Gallery Section */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 2rem;
 }
 
@@ -472,8 +657,10 @@ html[dir="rtl"] .contact-item {
   transition: var(--transition);
 }
 
-.gallery-item:hover img {
-  transform: scale(1.1);
+@media (hover: hover) {
+  .gallery-item:hover img {
+    transform: scale(1.1);
+  }
 }
 
 .gallery-item p {
@@ -512,7 +699,7 @@ html[dir="rtl"] .contact-item {
 /* Testimonials Section */
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 2rem;
 }
 
@@ -529,9 +716,11 @@ html[dir="rtl"] .contact-item {
   background-color: #2a2a2a;
 }
 
-.testimonial-card:hover {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+  .testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .testimonial-card .stars {
@@ -580,8 +769,10 @@ html[dir="rtl"] .contact-item {
   background-color: #2a2a2a;
 }
 
-.contact-item:hover {
-  transform: translateX(5px);
+@media (hover: hover) {
+  .contact-item:hover {
+    transform: translateX(5px);
+  }
 }
 
 .contact-item h3 {
@@ -605,7 +796,21 @@ html[dir="rtl"] .contact-item {
   line-height: 1.6;
 }
 
-.contact-item a:hover {
+/* Calling, messaging and emailing are the whole point of this section on a
+   phone, but these were 21px-tall tap targets. Give them a real hit area. */
+.contact-item a,
+.contact-item .link-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: -0.25rem -0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+}
+
+.contact-item a:active,
+.contact-item .link-button:active {
+  background-color: rgba(220, 20, 60, 0.1);
   color: var(--secondary-color);
 }
 
@@ -615,19 +820,31 @@ html[dir="rtl"] .contact-item {
   color: var(--text-color);
   font-size: 1.1rem;
   cursor: pointer;
-  padding: 0;
   text-decoration: none;
   font-family: inherit;
+  text-align: inherit;
 }
 
-.link-button:hover {
-  color: var(--secondary-color);
+@media (hover: hover) {
+  .contact-item a:hover,
+  .link-button:hover {
+    color: var(--secondary-color);
+  }
 }
 
 .map-container {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
+}
+
+/* The iframe used to carry a hardcoded height="400"; sizing it here lets the
+   map shrink sensibly on a phone instead of eating the whole screen. */
+.map-container iframe {
+  display: block;
+  width: 100%;
+  height: clamp(260px, 45vh, 400px);
+  border: 0;
 }
 
 /* Footer */
@@ -646,8 +863,8 @@ html[dir="rtl"] .contact-item {
 /* WhatsApp Button */
 .whatsapp-button {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  right: calc(2rem + env(safe-area-inset-right));
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -664,9 +881,11 @@ html[dir="rtl"] .contact-item {
   justify-content: center;
 }
 
-.whatsapp-button:hover {
-  transform: scale(1.15);
-  box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+@media (hover: hover) {
+  .whatsapp-button:hover {
+    transform: scale(1.15);
+    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+  }
 }
 
 .whatsapp-button:active {
@@ -675,7 +894,7 @@ html[dir="rtl"] .contact-item {
 
 /* Social Media Section */
 .social-media {
-  padding: 4rem 2rem;
+  padding: 4rem var(--gutter);
   max-width: 1200px;
   margin: 0 auto 4rem;
   text-align: center;
@@ -711,79 +930,148 @@ html[dir="rtl"] .contact-item {
   color: var(--accent-color);
 }
 
-.social-link:hover {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-lg);
-}
+@media (hover: hover) {
+  .social-link:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+  }
 
-.social-link.facebook:hover {
-  color: #1877f2;
-}
+  .social-link.facebook:hover,
+  .social-link.facebook:hover svg {
+    color: #1877f2;
+  }
 
-.social-link.facebook:hover svg {
-  color: #1877f2;
-}
+  .social-link.instagram:hover {
+    background: linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%);
+    color: white;
+  }
 
-.social-link.instagram:hover {
-  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%);
-  color: white;
-}
-
-.social-link.instagram:hover svg {
-  color: white;
-  stroke: white;
+  .social-link.instagram:hover svg {
+    color: white;
+    stroke: white;
+  }
 }
 
 .social-link svg {
   transition: var(--transition);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* ==========================================================================
+   Responsive Design
+   Breakpoints: 1024 (small laptop) / 900 (tablet) / 768 (phone, nav collapses)
+   / 480 (small phone) / 380 (compact phone)
+   ========================================================================== */
+
+/* Tablets and small laptops — pull the gutter in before things get tight. */
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 1.5rem;
+  }
+
   .hero {
-    grid-template-columns: 1fr;
-    margin-top: 60px;
-    padding: 2rem 1rem;
-    min-height: auto;
-    gap: 2rem;
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-tagline {
-    font-size: 1.2rem;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-    text-align: center;
+    gap: 2.5rem;
   }
 
   .nav-links {
-    display: none;
+    gap: 1.25rem;
+  }
+}
+
+/* The two-column hero stops working well before the nav does. */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 2rem;
+    padding-top: 2.5rem;
   }
 
-  .navbar-container {
-    justify-content: space-between;
+  .hero-image {
+    max-width: 560px;
+    width: 100%;
+    margin-inline: auto;
   }
 
   .contact-container {
     grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Phones — the desktop nav collapses into the hamburger here. */
+@media (max-width: 768px) {
+  :root {
+    --gutter: 1rem;
+    /* Measured: 0.6rem top + 0.6rem bottom padding + a 44px-tall button row. */
+    --nav-h: calc(64px + env(safe-area-inset-top));
   }
 
-  .section-header h2 {
-    font-size: 2rem;
+  .navbar {
+    padding: 0.6rem 0;
+    padding-top: calc(0.6rem + env(safe-area-inset-top));
+  }
+
+  .logo {
+    width: 48px;
+    max-height: 44px;
+  }
+
+  .brand-name {
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Swap the inline links for the drawer. Without this the sections were
+     simply unreachable from the header on a phone. */
+  .nav-links {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .mobile-nav[hidden] {
+    display: none;
+  }
+
+  .navbar-buttons {
+    gap: 0.5rem;
+  }
+
+  .language-toggle {
+    min-width: 0;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .hero {
+    padding: 2rem var(--gutter);
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  /* RTL sets justify-content on .hero-buttons at desktop widths; in a stacked
+     column the cross axis is what needs resetting. */
+  html[dir="rtl"] .hero-buttons {
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
   }
 
   .quick-info {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 1.5rem;
     padding: 2rem 1rem;
   }
 
@@ -792,74 +1080,149 @@ html[dir="rtl"] .contact-item {
   .testimonials,
   .contact,
   .social-media {
-    padding: 2rem 1rem;
+    padding: 2.5rem var(--gutter);
+    margin-bottom: 2rem;
   }
 
-  .services-grid,
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .service-card,
+  .testimonial-card {
+    padding: 1.5rem;
+  }
+
+  /* A full-width 1:1 tile made each gallery item a whole screen tall. */
+  .gallery-item {
+    aspect-ratio: 4 / 3;
+  }
+
   .gallery-grid,
   .testimonials-grid {
-    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .contact-info {
+    gap: 1rem;
   }
 
   .social-links {
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .social-link {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
     flex: 1 1 calc(50% - 1rem);
+    min-width: 130px;
   }
 
   .whatsapp-button {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-    bottom: 1rem;
-    right: 1rem;
+    width: 56px;
+    height: 56px;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    right: calc(1rem + env(safe-area-inset-right));
+  }
+
+  html[dir="rtl"] .whatsapp-button {
+    right: auto;
+    left: calc(1rem + env(safe-area-inset-left));
+  }
+
+  .footer {
+    margin-top: 2rem;
+    padding: 2rem 1rem calc(2rem + env(safe-area-inset-bottom));
   }
 }
 
+/* Small phones */
 @media (max-width: 480px) {
-  .brand-name {
-    font-size: 1.3rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-tagline {
-    font-size: 1rem;
+  .hero {
+    padding-top: 1.5rem;
   }
 
   .quick-info {
     grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .info-card .icon {
-    font-size: 2rem;
+    gap: 1.25rem;
   }
 
   .info-card h3 {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
-  .section-header h2 {
-    font-size: 1.5rem;
+  .info-card p {
+    font-size: 0.9rem;
+  }
+
+  .service-card h3 {
+    font-size: 1.15rem;
   }
 
   .btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.95rem;
+    padding: 0.85rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .contact-item {
+    padding: 1.15rem;
+  }
+
+  .contact-item a,
+  .contact-item p,
+  .link-button {
+    font-size: 1rem;
   }
 
   .social-links {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .social-link {
     width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+/* Compact phones (iPhone SE, Galaxy S-mini and friends) — the header row is
+   the tightest thing on the page, so shed a few more pixels. */
+@media (max-width: 360px) {
+  .logo {
+    width: 40px;
+    max-height: 38px;
+  }
+
+  .logo-section {
+    gap: 0.5rem;
+  }
+
+  .brand-name {
+    font-size: 1.05rem;
+  }
+
+  .language-toggle {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  .navbar-buttons {
+    gap: 0.4rem;
+  }
+}
+
+/* Landscape phones: the hero shouldn't reserve most of a 380px-tall viewport. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .mobile-nav {
+    max-height: 60vh;
+    overflow-y: auto;
   }
 }

@@ -13,6 +13,8 @@ import {
   Cog,
   MessageCircle,
   Star,
+  Menu,
+  X,
   Image as ImageIcon,
 } from 'lucide-react'
 import './App.css'
@@ -99,7 +101,11 @@ const translations = {
     services: 'Services',
     gallery: 'Gallery',
     reviews: 'Reviews',
-    contact: 'Contact'
+    contact: 'Contact',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    darkModeLabel: 'Switch to dark mode',
+    lightModeLabel: 'Switch to light mode'
   },
   ar: {
     welcome: 'أهلا و سهلا ب',
@@ -162,7 +168,11 @@ const translations = {
     services: 'الخدمات',
     gallery: 'المعرض',
     reviews: 'التقييمات',
-    contact: 'تواصل'
+    contact: 'تواصل',
+    openMenu: 'افتح القائمة',
+    closeMenu: 'أغلق القائمة',
+    darkModeLabel: 'التبديل إلى الوضع الليلي',
+    lightModeLabel: 'التبديل إلى الوضع النهاري'
   }
 }
 
@@ -170,15 +180,43 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [language, setLanguage] = useState('en')
+  const [menuOpen, setMenuOpen] = useState(false)
   const t = translations[language]
+
+  const navItems = [
+    { href: '#services', label: t.services },
+    { href: '#gallery', label: t.gallery },
+    { href: '#testimonials', label: t.reviews },
+    { href: '#contact', label: t.contact },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Close the mobile menu on Escape, and whenever the viewport grows to desktop
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    const desktop = window.matchMedia('(min-width: 769px)')
+    const onChange = (e) => {
+      if (e.matches) setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    desktop.addEventListener('change', onChange)
+    document.body.classList.add('menu-open')
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      desktop.removeEventListener('change', onChange)
+      document.body.classList.remove('menu-open')
+    }
+  }, [menuOpen])
 
   useEffect(() => {
     if (darkMode) {
@@ -206,28 +244,56 @@ function App() {
   return (
     <div className="app">
       {/* Header/Navigation */}
-      <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <header className={`navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
         <div className="navbar-container">
           <div className="logo-section">
             <img src={darkMode ? logoDark : logoLight} alt="Zein Tyres Logo" className="logo" />
             <h1 className="brand-name">Zein Tyres</h1>
           </div>
           <nav className="nav-links">
-            <a href="#services">{t.services}</a>
-            <a href="#gallery">{t.gallery}</a>
-            <a href="#testimonials">{t.reviews}</a>
-            <a href="#contact">{t.contact}</a>
+            {navItems.map(({ href, label }) => (
+              <a key={href} href={href}>{label}</a>
+            ))}
           </nav>
           <div className="navbar-buttons">
-            <button className="language-toggle" onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}>
+            <button
+              className="language-toggle"
+              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            >
               {language === 'en' ? 'العربية' : 'English'}
             </button>
-            <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>
-              {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+            <button
+              className="theme-toggle"
+              onClick={() => setDarkMode(!darkMode)}
+              aria-label={darkMode ? t.lightModeLabel : t.darkModeLabel}
+            >
+              {darkMode ? <Sun size={22} /> : <Moon size={22} />}
+            </button>
+            <button
+              className="nav-toggle"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? t.closeMenu : t.openMenu}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
+        <nav id="mobile-nav" className="mobile-nav" hidden={!menuOpen}>
+          {navItems.map(({ href, label }) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
+          ))}
+        </nav>
       </header>
+      {menuOpen && (
+        <button
+          className="nav-scrim"
+          onClick={() => setMenuOpen(false)}
+          aria-label={t.closeMenu}
+          tabIndex={-1}
+        />
+      )}
 
       {/* Hero Section */}
       <section className="hero">
@@ -246,10 +312,10 @@ function App() {
               <MessageCircle size={20} style={{display: 'inline', marginRight: '0.5rem'}} /> {t.whatsappBtn}
             </button>
           </div>
-          <p className="location-badge">📍 {t.location}</p>
+          <p className="location-badge">{t.location}</p>
         </div>
         <div className="hero-image">
-          <img src={shopPhoto} alt="Zein Tyres Shop" />
+          <img src={shopPhoto} alt="Zein Tyres Shop" width="1024" height="768" fetchPriority="high" />
         </div>
       </section>
 
@@ -262,13 +328,13 @@ function App() {
         </div>
         <div className="info-card">
           <Phone className="icon" size={32} />
-          <h3>{t.phone}</h3>
+          <h3><a href="tel:+96170436172" className="info-link">{t.phone}</a></h3>
           <p>{t.callWhatsapp}</p>
         </div>
         <div className="info-card">
           <Mail className="icon" size={32} />
           <h3>{t.emailUs}</h3>
-          <p>{t.email}</p>
+          <p><a href="mailto:zeintires@gmail.com" className="info-link">{t.email}</a></p>
         </div>
         <div className="info-card">
           <Wrench className="icon" size={32} />
@@ -325,7 +391,7 @@ function App() {
         </div>
         <div className="gallery-grid">
           <div className="gallery-item">
-            <img src={shopPhoto} alt="Shop Interior" />
+            <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
             <p>{t.professionalSetup}</p>
           </div>
           <div className="gallery-item placeholder">
@@ -416,9 +482,6 @@ function App() {
           <div className="map-container">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.5235848748753!2d35.59088!3d34.13333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151f5db3b7c5d5ad%3A0xf90bd77fcc58d36a!2sZein%20Tyres!5e0!3m2!1sen!2slb!4v1"
-              width="100%"
-              height="400"
-              style={{ border: 0, borderRadius: '8px' }}
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
