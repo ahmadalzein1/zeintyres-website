@@ -505,7 +505,7 @@ function App() {
           <p>{t.socialDesc}</p>
         </div>
         <div className="social-links">
-          <a href="https://www.facebook.com/share/1C4nZ8TTMg/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-link facebook">
+          <a href="https://www.facebook.com/Abdulkarimahmadelzein/" target="_blank" rel="noopener noreferrer" className="social-link facebook">
             <FacebookLogo size={40} />
             <span>{t.facebook}</span>
           </a>
