@@ -290,7 +290,7 @@ function App() {
               className="language-toggle"
               onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
             >
-              {language === 'en' ? 'العربية' : 'English'}
+              {language === 'en' ? 'العربية' : 'EN'}
             </button>
             <button
               className="theme-toggle"
