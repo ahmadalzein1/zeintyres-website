@@ -217,6 +217,7 @@ function App() {
     { href: '#gallery', label: t.gallery },
     { href: '#testimonials', label: t.reviews },
     { href: '#contact', label: t.contact },
+    { href: '#social', label: t.followUs },
   ]
 
   useEffect(() => {
@@ -513,7 +514,7 @@ function App() {
       </section>
 
       {/* Social Media Section */}
-      <section className="social-media">
+      <section id="social" className="social-media">
         <div className="section-header">
           <h2>{t.followUs}</h2>
           <p>{t.socialDesc}</p>

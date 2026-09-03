@@ -208,6 +208,9 @@ html[dir="rtl"] .contact-item {
   font-weight: 500;
   transition: var(--transition);
   position: relative;
+  /* "Follow Us" is the only two-word link — keep it on one line when the row
+     gets tight on tablets rather than letting it wrap under itself. */
+  white-space: nowrap;
 }
 
 .nav-links a::after {
