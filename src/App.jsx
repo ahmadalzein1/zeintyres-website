@@ -33,6 +33,25 @@ const PHONE = {
   e164: '9613010150',         // digits only, for tel: and wa.me
 }
 
+// Real reviews left on the shop's Google listing, copied verbatim. The Arabic
+// wording is a translation of the same review, the way Google shows one.
+const GOOGLE_REVIEWS_URL = 'https://www.google.com/maps?cid=17945674084077065066'
+
+const REVIEWS = [
+  {
+    author: 'milena najeeb',
+    rating: 5,
+    en: '"The best service, the owner is very friendly and the staff is very professional."',
+    ar: '"أفضل خدمة، صاحب المحل لطيف جداً والفريق محترف جداً."',
+  },
+  {
+    author: 'Rami Bnc',
+    rating: 4,
+    en: '"Great service, helpful & kind people, they will do the job."',
+    ar: '"خدمة ممتازة، أشخاص لطيفون ومتعاونون، ينجزون العمل كما يجب."',
+  },
+]
+
 const EMAIL = {
   info: 'info@zeintyres.com',        // general enquiries
   support: 'support@zeintyres.com',  // after-sales / help
@@ -89,13 +108,8 @@ const translations = {
     professionalSetup: 'Professional Setup',
     morePhotos: 'More Photos Coming Soon',
     customerReviews: 'Customer Reviews',
-    reviewsDesc: 'What our satisfied customers say',
-    review1: '"Excellent service! Quick, professional, and affordable. Highly recommended!"',
-    review2: '"Best tire shop in Amchit. Available 24/7 when you need them most."',
-    review3: '"Professional team with fair prices. They really care about customers."',
-    author1: '- Ahmed K.',
-    author2: '- Maria J.',
-    author3: '- Hassan R.',
+    reviewsDesc: 'What our customers say on Google',
+    seeAllReviews: 'Read all our reviews on Google →',
     getInTouch: 'Get in Touch',
     helpDesc: 'We\'re here to help 24/7',
     phoneLabel: 'Phone',
@@ -155,13 +169,8 @@ const translations = {
     professionalSetup: 'إعداد احترافي',
     morePhotos: 'صور إضافية قريباً',
     customerReviews: 'تقييمات العملاء',
-    reviewsDesc: 'ما يقوله عملاؤنا الراضون',
-    review1: '"خدمة ممتازة! سريعة واحترافية وبأسعار معقولة. ننصح بها بشدة!"',
-    review2: '"أفضل متجر إطارات في عمشيت. مفتوح 24/7 عندما تحتاج إليه."',
-    review3: '"فريق احترافي وأسعار عادلة. يهتمون حقاً بالعملاء."',
-    author1: '- أحمد خ.',
-    author2: '- مارية ج.',
-    author3: '- حسن ر.',
+    reviewsDesc: 'ما يقوله عملاؤنا على جوجل',
+    seeAllReviews: '← اقرأ كل التقييمات على جوجل',
     getInTouch: 'تواصل معنا',
     helpDesc: 'نحن هنا لمساعدتك 24/7',
     phoneLabel: 'الهاتف',
@@ -425,41 +434,29 @@ function App() {
           <h2>{t.customerReviews}</h2>
           <p>{t.reviewsDesc}</p>
         </div>
-        <div className="testimonials-grid">
-          <div className="testimonial-card">
-            <div className="stars">
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
+        <div className="testimonials-scroll" tabIndex={0}>
+          {REVIEWS.map((review) => (
+            <div className="testimonial-card" key={review.author}>
+              <div className="stars" aria-label={`${review.rating} / 5`}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={20}
+                    className={star <= review.rating ? 'star-icon' : 'star-icon star-empty'}
+                    fill={star <= review.rating ? 'currentColor' : 'none'}
+                  />
+                ))}
+              </div>
+              <p>{language === 'ar' ? review.ar : review.en}</p>
+              <p className="author">- {review.author}</p>
             </div>
-            <p>{t.review1}</p>
-            <p className="author">{t.author1}</p>
-          </div>
-          <div className="testimonial-card">
-            <div className="stars">
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-            </div>
-            <p>{t.review2}</p>
-            <p className="author">{t.author2}</p>
-          </div>
-          <div className="testimonial-card">
-            <div className="stars">
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-              <Star size={20} className="star-icon" fill="currentColor" />
-            </div>
-            <p>{t.review3}</p>
-            <p className="author">{t.author3}</p>
-          </div>
+          ))}
         </div>
+        <p className="reviews-link">
+          <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">
+            {t.seeAllReviews}
+          </a>
+        </p>
       </section>
 
       {/* Contact Section */}
