@@ -31,7 +31,10 @@ const PHONE = {
   e164: '9613010150',         // digits only, for tel: and wa.me
 }
 
-const EMAIL = 'zeintires@gmail.com'
+const EMAIL = {
+  info: 'info@zeintyres.com',        // general enquiries
+  support: 'support@zeintyres.com',  // after-sales / help
+}
 
 // Facebook Logo Component
 const FacebookLogo = ({ size = 40 }) => (
@@ -96,6 +99,7 @@ const translations = {
     phoneLabel: 'Phone',
     whatsappLabel: 'WhatsApp',
     emailLabel: 'Email',
+    supportLabel: 'Support',
     locationLabel: 'Location',
     amchitLeb: 'Amchit, Lebanon',
     facingMcDonald: 'Facing McDonald\'s',
@@ -161,6 +165,7 @@ const translations = {
     phoneLabel: 'الهاتف',
     whatsappLabel: 'واتس أب',
     emailLabel: 'البريد الإلكتروني',
+    supportLabel: 'الدعم الفني',
     locationLabel: 'الموقع',
     amchitLeb: 'عمشيت، لبنان',
     facingMcDonald: 'مقابل ماكدونالد',
@@ -341,7 +346,8 @@ function App() {
         <div className="info-card">
           <Mail className="icon" size={32} />
           <h3>{t.emailUs}</h3>
-          <p><a href={`mailto:${EMAIL}`} className="info-link">{EMAIL}</a></p>
+          <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
+          <p><a href={`mailto:${EMAIL.support}`} className="info-link">{EMAIL.support}</a></p>
         </div>
         <div className="info-card">
           <Wrench className="icon" size={32} />
@@ -475,7 +481,11 @@ function App() {
             </div>
             <div className="contact-item">
               <h3><Mail size={24} className="contact-icon" /> {t.emailLabel}</h3>
-              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+              <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+            </div>
+            <div className="contact-item">
+              <h3><Mail size={24} className="contact-icon" /> {t.supportLabel}</h3>
+              <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
             </div>
             <div className="contact-item">
               <h3><MapPin size={24} className="contact-icon" /> {t.locationLabel}</h3>

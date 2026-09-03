@@ -379,21 +379,9 @@ html[dir="rtl"] .mobile-nav a {
 .hero-title {
   font-size: clamp(2.25rem, 9vw, 4rem);
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--secondary-color);
   margin-bottom: 1rem;
   line-height: 1.1;
-  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-:root[data-theme='dark'] .hero-title {
-  color: var(--accent-color);
-  background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .hero-tagline {
