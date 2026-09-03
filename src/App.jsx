@@ -45,6 +45,12 @@ const REVIEWS = [
     ar: '"أفضل خدمة، صاحب المحل لطيف جداً والفريق محترف جداً."',
   },
   {
+    author: 'Houssein Al Shami Abboud',
+    rating: 5,
+    en: '"Excellent service."',
+    ar: '"خدمة ممتازة."',
+  },
+  {
     author: 'Rami Bnc',
     rating: 4,
     en: '"Great service, helpful & kind people, they will do the job."',
