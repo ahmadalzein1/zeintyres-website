@@ -8,6 +8,7 @@ import {
   LifeBuoy,
   MapPin,
   Wrench,
+  Truck,
   Hammer,
   Gauge,
   Disc,
@@ -67,8 +68,8 @@ const translations = {
     alwaysReady: 'Always Ready',
     callWhatsapp: 'Call & WhatsApp',
     emailUs: 'Email Us',
-    fullService: 'Full Service',
-    allInOne: 'All in One',
+    roadsideService: 'Roadside Service',
+    weComeToYou: 'We Come to You',
     ourServices: 'Our Services',
     servicesDesc: 'Comprehensive tire and automotive solutions',
     tireSales: 'Tire Sales',
@@ -133,8 +134,8 @@ const translations = {
     alwaysReady: 'جاهز دائماً',
     callWhatsapp: 'اتصل أو واتس أب',
     emailUs: 'راسلنا بالبريد',
-    fullService: 'خدمات شاملة',
-    allInOne: 'الكل في واحد',
+    roadsideService: 'خدمة على الطريق',
+    weComeToYou: 'نأتي إليك أينما كنت',
     ourServices: 'خدماتنا',
     servicesDesc: 'حلول شاملة للإطارات والسيارات',
     tireSales: 'بيع الإطارات',
@@ -350,9 +351,9 @@ function App() {
           <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
         </div>
         <div className="info-card">
-          <Wrench className="icon" size={32} />
-          <h3>{t.fullService}</h3>
-          <p>{t.allInOne}</p>
+          <Truck className="icon" size={32} />
+          <h3>{t.roadsideService}</h3>
+          <p>{t.weComeToYou}</p>
         </div>
       </section>
 
