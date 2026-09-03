@@ -23,12 +23,12 @@ import logoLight from './assets/lightmode.png'
 import shopPhoto from './assets/download.jpg'
 
 // Single source of truth for the shop's phone number. It used to be spelled
-// out in five places, which is how the displayed number (03 436 172) and the
-// dialled one (+961 70 436 172) drifted apart.
+// out in five places, which is how the displayed number and the dialled one
+// drifted apart.
 const PHONE = {
-  local: '03 436 172',        // as shown to visitors
-  intl: '+961 3 436 172',     // international, for the WhatsApp row
-  e164: '9613436172',         // digits only, for tel: and wa.me
+  local: '03 010 150',        // as shown to visitors
+  intl: '+961 3 010 150',     // international, for the WhatsApp row
+  e164: '9613010150',         // digits only, for tel: and wa.me
 }
 
 const EMAIL = 'zeintires@gmail.com'
