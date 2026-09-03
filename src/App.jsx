@@ -5,6 +5,7 @@ import {
   Clock,
   Phone,
   Mail,
+  LifeBuoy,
   MapPin,
   Wrench,
   Hammer,
@@ -484,7 +485,7 @@ function App() {
               <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
             </div>
             <div className="contact-item">
-              <h3><Mail size={24} className="contact-icon" /> {t.supportLabel}</h3>
+              <h3><LifeBuoy size={24} className="contact-icon" /> {t.supportLabel}</h3>
               <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
             </div>
             <div className="contact-item">
