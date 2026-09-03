@@ -348,7 +348,6 @@ function App() {
           <Mail className="icon" size={32} />
           <h3>{t.emailUs}</h3>
           <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
-          <p><a href={`mailto:${EMAIL.support}`} className="info-link">{EMAIL.support}</a></p>
         </div>
         <div className="info-card">
           <Wrench className="icon" size={32} />
