@@ -56,7 +56,7 @@ const translations = {
     tagline: 'Your Trusted Tire Solution in Amchit, Lebanon',
     description: 'Professional tire sales, repairs, maintenance & wheel alignment.',
     hours24: 'Open 24/7 • Always Ready to Serve You',
-    location: '📍 Facing McDonald\'s, Amchit',
+    location: '📍 Facing McDonald\'s, Amchit, Lebanon',
     contactBtn: 'Contact Us',
     whatsappBtn: 'WhatsApp Now',
     open24: '24/7 Open',
