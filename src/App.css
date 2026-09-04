@@ -951,6 +951,8 @@ html[dir="rtl"] .mobile-nav a {
   align-items: center;
   gap: 1rem;
   padding: 2rem;
+  /* Equal cards regardless of label length — "TikTok" is shorter than the rest. */
+  min-width: 11rem;
   border-radius: 12px;
   background-color: var(--accent-color);
   box-shadow: var(--shadow);
@@ -972,9 +974,13 @@ html[dir="rtl"] .mobile-nav a {
     box-shadow: var(--shadow-lg);
   }
 
-  .social-link.facebook:hover,
+  .social-link.facebook:hover {
+    background-color: #1877f2;
+    color: white;
+  }
+
   .social-link.facebook:hover svg {
-    color: #1877f2;
+    color: white;
   }
 
   .social-link.instagram:hover {
@@ -985,6 +991,15 @@ html[dir="rtl"] .mobile-nav a {
   .social-link.instagram:hover svg {
     color: white;
     stroke: white;
+  }
+
+  .social-link.tiktok:hover {
+    background-color: #010101;
+    color: #ee1d52;
+  }
+
+  .social-link.tiktok:hover svg {
+    color: #25f4ee;
   }
 }
 

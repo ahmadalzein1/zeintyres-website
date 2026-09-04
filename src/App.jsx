@@ -79,6 +79,13 @@ const InstagramLogo = ({ size = 40 }) => (
   </svg>
 )
 
+// TikTok Logo Component
+const TikTokLogo = ({ size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.18c.27 0 .52.04.77.12v-3.2a5.8 5.8 0 0 0-.77-.05A5.72 5.72 0 0 0 4.14 15.3 5.72 5.72 0 0 0 9.86 21a5.72 5.72 0 0 0 5.72-5.72V9.01a7.35 7.35 0 0 0 4.28 1.37V7.3a4.28 4.28 0 0 1-3.26-1.48z"/>
+  </svg>
+)
+
 // Translations
 const translations = {
   en: {
@@ -131,6 +138,7 @@ const translations = {
     socialDesc: 'Stay connected on social media',
     facebook: 'Facebook',
     instagram: 'Instagram',
+    tiktok: 'TikTok',
     copyright: '© 2026 Zein Tyres. All rights reserved.',
     professionalService: 'Professional tire service in Amchit, Lebanon',
     services: 'Services',
@@ -192,6 +200,7 @@ const translations = {
     socialDesc: 'ابق متصلاً معنا على وسائل التواصل الاجتماعي',
     facebook: 'فيسبوك',
     instagram: 'إنستجرام',
+    tiktok: 'تيك توك',
     copyright: '© 2026 زين تايرز. جميع الحقوق محفوظة.',
     professionalService: 'خدمة إطارات احترافية في عمشيت، لبنان',
     services: 'الخدمات',
@@ -527,6 +536,10 @@ function App() {
           <a href="https://www.instagram.com/zein_tires/" target="_blank" rel="noopener noreferrer" className="social-link instagram">
             <InstagramLogo size={40} />
             <span>{t.instagram}</span>
+          </a>
+          <a href="https://www.tiktok.com/@zein.tires" target="_blank" rel="noopener noreferrer" className="social-link tiktok">
+            <TikTokLogo size={40} />
+            <span>{t.tiktok}</span>
           </a>
         </div>
       </section>
