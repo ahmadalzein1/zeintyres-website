@@ -34,6 +34,78 @@
     <meta name="twitter:title" content="Zein Tyres - Professional Tire Shop Amchit, Lebanon" />
     <meta name="twitter:description" content="Zein Tyres - Professional tire sales, repairs, maintenance &amp; wheel alignment. Open 24/7 in Amchit, Lebanon" />
     <meta name="twitter:image" content="https://www.zeintyres.com/og-image.png" />
+
+    <!-- Structured data for the local listing. Like the preview tags above,
+         this has to be static in the head: Google reads it without waiting on
+         our JS, and it is what makes the shop eligible for the hours, phone
+         and directions shown directly in search results.
+
+         Deliberately no aggregateRating here. The 4.9/37 belongs to the Google
+         listing, and marking up your own rating on your own site is what
+         Google calls self-serving review markup - it earns a manual action
+         rather than stars. The listing supplies those on its own. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AutoRepair",
+      "@id": "https://www.zeintyres.com/#business",
+      "name": "Zein Tyres",
+      "url": "https://www.zeintyres.com/",
+      "image": "https://www.zeintyres.com/og-image.png",
+      "description": "Professional tire sales, repairs, maintenance and wheel alignment in Amchit, Lebanon. Open 24/7.",
+      "telephone": "+961 3 010 150",
+      "email": "info@zeintyres.com",
+      "priceRange": "$$",
+      "currenciesAccepted": "USD, LBP",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jbeil Highway, facing McDonald's",
+        "addressLocality": "Amchit",
+        "addressRegion": "Keserwan-Jbeil",
+        "addressCountry": "LB"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 34.13333,
+        "longitude": 35.59088
+      },
+      "hasMap": "https://www.google.com/maps?cid=17945674084077065066",
+      "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday", "Tuesday", "Wednesday", "Thursday",
+          "Friday", "Saturday", "Sunday"
+        ],
+        "opens": "00:00",
+        "closes": "23:59"
+      }],
+      "areaServed": [
+        { "@type": "City", "name": "Amchit" },
+        { "@type": "City", "name": "Byblos" },
+        { "@type": "City", "name": "Jbeil" },
+        { "@type": "City", "name": "Batroun" }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/Abdulkarimahmadelzein/",
+        "https://www.instagram.com/zein_tires/",
+        "https://www.tiktok.com/@zein.tires",
+        "https://www.google.com/maps?cid=17945674084077065066"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Tire and wheel services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tire Sales" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tire Repairs" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tire Maintenance" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wheel Alignment" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Rim Sales" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Rim Repairs" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roadside Service" } }
+        ]
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
