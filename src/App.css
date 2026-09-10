@@ -626,9 +626,12 @@ html[dir="rtl"] .mobile-nav a {
 }
 
 /* Gallery Section */
+/* Capped at 420px and centred so the single shop photo doesn't stretch into a
+   page-wide square; extra photos still flow into more columns. */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 420px));
+  justify-content: center;
   gap: 2rem;
 }
 
@@ -663,28 +666,6 @@ html[dir="rtl"] .mobile-nav a {
   color: var(--accent-color);
   padding: 1rem;
   font-weight: 600;
-}
-
-.gallery-item.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--bg-color), var(--border-color));
-  flex-direction: column;
-  gap: 1rem;
-  color: var(--text-color);
-}
-
-.gallery-item.placeholder svg {
-  opacity: 0.5;
-}
-
-.gallery-item.placeholder p {
-  position: static;
-  background: none;
-  text-align: center;
-  color: var(--text-color);
-  font-size: 1.2rem;
 }
 
 /* Testimonials Section */

@@ -17,7 +17,6 @@ import {
   Star,
   Menu,
   X,
-  Image as ImageIcon,
 } from 'lucide-react'
 import './App.css'
 import logoDark from './assets/darkmode.png'
@@ -119,7 +118,6 @@ const translations = {
     ourShop: 'Our Shop',
     shopDesc: 'Quality service and professional expertise',
     professionalSetup: 'Professional Setup',
-    morePhotos: 'More Photos Coming Soon',
     customerReviews: 'Customer Reviews',
     reviewsDesc: 'What our customers say on Google',
     seeAllReviews: 'Read all our reviews on Google →',
@@ -181,7 +179,6 @@ const translations = {
     ourShop: 'متجرنا',
     shopDesc: 'خدمة عالية الجودة وخبرة احترافية',
     professionalSetup: 'إعداد احترافي',
-    morePhotos: 'صور إضافية قريباً',
     customerReviews: 'تقييمات العملاء',
     reviewsDesc: 'ما يقوله عملاؤنا على جوجل',
     seeAllReviews: '← اقرأ كل التقييمات على جوجل',
@@ -432,14 +429,6 @@ function App() {
           <div className="gallery-item">
             <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
             <p>{t.professionalSetup}</p>
-          </div>
-          <div className="gallery-item placeholder">
-            <ImageIcon size={48} />
-            <p>{t.morePhotos}</p>
-          </div>
-          <div className="gallery-item placeholder">
-            <ImageIcon size={48} />
-            <p>{t.morePhotos}</p>
           </div>
         </div>
       </section>
