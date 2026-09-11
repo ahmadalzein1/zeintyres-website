@@ -518,11 +518,11 @@ function App() {
           <p>{t.socialDesc}</p>
         </div>
         <div className="social-links">
-          <a href="https://www.facebook.com/Abdulkarimahmadelzein/" target="_blank" rel="noopener noreferrer" className="social-link facebook">
+          <a href="https://m.me/Abdulkarimahmadelzein" target="_blank" rel="noopener noreferrer" className="social-link facebook">
             <FacebookLogo size={40} />
             <span>{t.facebook}</span>
           </a>
-          <a href="https://www.instagram.com/zein_tires/" target="_blank" rel="noopener noreferrer" className="social-link instagram">
+          <a href="https://ig.me/m/zein_tires" target="_blank" rel="noopener noreferrer" className="social-link instagram">
             <InstagramLogo size={40} />
             <span>{t.instagram}</span>
           </a>
