@@ -27,9 +27,9 @@ import shopPhoto from './assets/download.jpg'
 // out in five places, which is how the displayed number and the dialled one
 // drifted apart.
 const PHONE = {
-  local: '03 010 150',        // as shown to visitors
-  intl: '+961 3 010 150',     // international, for the WhatsApp row
-  e164: '9613010150',         // digits only, for tel: and wa.me
+  local: '70 428 165',        // as shown to visitors
+  intl: '+961 70 428 165',    // international, for the WhatsApp row
+  e164: '96170428165',        // digits only, for tel: and wa.me
 }
 
 // Real reviews left on the shop's Google listing, copied verbatim. The Arabic
