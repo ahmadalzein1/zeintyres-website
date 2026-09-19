@@ -540,11 +540,6 @@ function App() {
           <p>{t.professionalService}</p>
         </div>
       </footer>
-
-      {/* WhatsApp Floating Button */}
-      <button className="whatsapp-button" onClick={handleWhatsApp} title="Chat on WhatsApp">
-        <MessageCircle size={32} />
-      </button>
     </div>
   )
 }

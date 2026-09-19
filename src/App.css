@@ -877,38 +877,6 @@ html[dir="rtl"] .mobile-nav a {
   margin: 0.5rem 0;
 }
 
-/* WhatsApp Button */
-.whatsapp-button {
-  position: fixed;
-  bottom: calc(2rem + env(safe-area-inset-bottom));
-  right: calc(2rem + env(safe-area-inset-right));
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #25d366;
-  color: white;
-  font-size: 2rem;
-  border: none;
-  cursor: pointer;
-  box-shadow: var(--shadow-lg);
-  transition: var(--transition);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (hover: hover) {
-  .whatsapp-button:hover {
-    transform: scale(1.15);
-    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
-  }
-}
-
-.whatsapp-button:active {
-  transform: scale(0.95);
-}
-
 /* Social Media Section */
 .social-media {
   padding: 4rem var(--gutter);
@@ -1151,18 +1119,6 @@ html[dir="rtl"] .mobile-nav a {
     padding: 1.5rem 1rem;
     flex: 1 1 calc(50% - 1rem);
     min-width: 130px;
-  }
-
-  .whatsapp-button {
-    width: 56px;
-    height: 56px;
-    bottom: calc(1rem + env(safe-area-inset-bottom));
-    right: calc(1rem + env(safe-area-inset-right));
-  }
-
-  html[dir="rtl"] .whatsapp-button {
-    right: auto;
-    left: calc(1rem + env(safe-area-inset-left));
   }
 
   .footer {
