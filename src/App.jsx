@@ -522,7 +522,7 @@ function App() {
             <FacebookLogo size={40} />
             <span>{t.facebook}</span>
           </a>
-          <a href="https://ig.me/m/zein_tires" target="_blank" rel="noopener noreferrer" className="social-link instagram">
+          <a href="https://ig.me/m/zein_tyres" target="_blank" rel="noopener noreferrer" className="social-link instagram">
             <InstagramLogo size={40} />
             <span>{t.instagram}</span>
           </a>
