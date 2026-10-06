@@ -22,7 +22,7 @@
   --surface-2: #efeff1;
   --border-color: rgba(17, 17, 20, 0.08);
   --border-strong: rgba(17, 17, 20, 0.15);
-  --dot-color: rgba(220, 20, 60, 0.38);
+  --dot-color: rgba(17, 17, 20, 0.15);
   --navbar-scrolled-bg: rgba(246, 246, 247, 0.78);
   --footer-bg: #0f0f12;
   /* Depth. Layered shadows: a tight contact shadow plus a wide soft one. */
@@ -63,7 +63,7 @@
   --border-strong: rgba(255, 255, 255, 0.14);
   /* Light dots on a dark page read fainter than dark dots on a light one,
      so the dark theme needs a stronger dot to look the same. */
-  --dot-color: rgba(255, 23, 68, 0.32);
+  --dot-color: rgba(255, 255, 255, 0.26);
   --navbar-scrolled-bg: rgba(11, 11, 13, 0.72);
   --footer-bg: #060607;
   /* The old dark theme used white shadows, which read as a glow. Depth on a
