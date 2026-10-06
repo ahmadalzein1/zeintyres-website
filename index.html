@@ -9,6 +9,30 @@
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <meta name="format-detection" content="telephone=no" />
     <title>Zein Tyres - Professional Tire Shop Amchit, Lebanon</title>
+
+    <!-- Apply the saved (or the device's) theme and language before first
+         paint, so a returning visitor never sees a flash of the wrong one.
+         Keys and defaults must match readPref() in src/App.jsx. -->
+    <script>
+      try {
+        var zt = document.documentElement
+        var theme = localStorage.getItem('zt-theme')
+        if (theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches) {
+          zt.setAttribute('data-theme', 'dark')
+        }
+        if (localStorage.getItem('zt-lang') === 'ar') {
+          zt.dir = 'rtl'
+          zt.lang = 'ar'
+        }
+      } catch (e) {}
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    />
     <link rel="canonical" href="https://www.zeintyres.com/" />
 
     <!-- Link previews (iMessage, WhatsApp, Facebook, LinkedIn). Scrapers never

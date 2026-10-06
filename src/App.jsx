@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
 import {
   Sun,
   Moon,
@@ -7,7 +9,8 @@ import {
   Mail,
   LifeBuoy,
   MapPin,
-  Wrench,
+  Tag,
+  Crosshair,
   Truck,
   Hammer,
   Gauge,
@@ -15,6 +18,8 @@ import {
   Cog,
   MessageCircle,
   Star,
+  Quote,
+  ArrowRight,
   Menu,
   X,
 } from 'lucide-react'
@@ -92,7 +97,15 @@ const translations = {
     tagline: 'Your Trusted Tire Solution in Amchit, Lebanon',
     description: 'Professional tire sales, repairs, maintenance & wheel alignment.',
     hours24: 'Open 24/7 • Always Ready to Serve You',
-    location: '📍 Facing McDonald\'s, Amchit, Lebanon',
+    location: 'Facing McDonald\'s, Amchit, Lebanon',
+    liveNow: 'Open now · 24/7',
+    servicesEyebrow: 'What we do',
+    galleryEyebrow: 'Inside the shop',
+    reviewsEyebrow: 'Testimonials',
+    contactEyebrow: 'Contact',
+    socialEyebrow: 'Social',
+    googleReview: 'Google review',
+    quickLinks: 'Quick links',
     contactBtn: 'Contact Us',
     whatsappBtn: 'WhatsApp Now',
     open24: '24/7 Open',
@@ -153,7 +166,15 @@ const translations = {
     tagline: 'محلك الموثوق للإطارات في عمشيت، لبنان',
     description: 'بيع وإصلاح وصيانة إطارات وضبط عجلات احترافي.',
     hours24: 'مفتوح 24/7 • جاهز دائماً لخدمتك',
-    location: '📍 مقابل ماكدونالدز، عمشيت، لبنان',
+    location: 'مقابل ماكدونالدز، عمشيت، لبنان',
+    liveNow: 'مفتوح الآن · 24/7',
+    servicesEyebrow: 'ماذا نقدم',
+    galleryEyebrow: 'داخل المحل',
+    reviewsEyebrow: 'آراء العملاء',
+    contactEyebrow: 'اتصل بنا',
+    socialEyebrow: 'تواصل اجتماعي',
+    googleReview: 'تقييم على جوجل',
+    quickLinks: 'روابط سريعة',
     contactBtn: 'تواصل معنا',
     whatsappBtn: 'واتس أب الآن',
     open24: 'مفتوح 24/7',
@@ -211,12 +232,286 @@ const translations = {
   }
 }
 
+// Reversible reveal-on-scroll, in the spirit of GSAP's "play / reverse".
+// A [data-reveal] element plays in when its top rises past SHOW_LINE and plays
+// back out when scrolling up drops it below HIDE_LINE; the gap between the two
+// stops it flickering if you park the page right on the line. Elements that
+// leave through the top stay shown, so scrolling up finds them already there.
+//
+// Everything runs on the Web Animations API rather than CSS classes because
+// every transition starts from the element's *current* computed state: reverse
+// mid-reveal and it turns around from where it is instead of snapping.
+// Elements that cross together - a row of cards - cascade in DOM order on the
+// way in and in reverse order on the way out.
+const SHOW_LINE = 0.88 // fraction of the viewport height, from the top
+const HIDE_LINE = 0.94
+const SHOW_MS = 900
+const HIDE_MS = 450
+const SHOW_STAGGER_MS = 90
+const HIDE_STAGGER_MS = 50
+const MAX_STAGGER_STEPS = 5
+
+// Hidden pose per data-reveal variant. Horizontal ones take the text
+// direction so "start" always comes from the reading side.
+const REVEAL_FROM = {
+  up: () => ({ opacity: 0, translate: '0 2rem' }),
+  zoom: () => ({ opacity: 0, scale: '0.94' }),
+  start: (dir) => ({ opacity: 0, translate: `${-2 * dir}rem 0` }),
+  end: (dir) => ({ opacity: 0, translate: `${2 * dir}rem 0` }),
+}
+
+// Resting value for each animated property.
+const AT_REST = { opacity: '1', translate: '0px 0px', scale: '1', rotate: '0deg' }
+
+// Secondary beats that land just after their card does, and leave with it.
+const POP = { opacity: 0, scale: '0.4', rotate: '-25deg' }
+const REVEAL_BEATS = [
+  { selector: ':scope > .eyebrow', pseudoElement: '::before', from: { scale: '0 1' }, delay: 200, duration: 800, easing: 'out' },
+  { selector: ':scope > .service-icon, :scope > .info-icon, :scope > .contact-icon', from: POP, delay: 200, duration: 700, easing: 'spring' },
+  // No opacity on stars: the empty ones rest at 0.45, not 1.
+  { selector: ':scope .stars > .star-icon', from: { scale: '0', rotate: '-25deg' }, delay: 250, step: 60, duration: 500, easing: 'spring' },
+]
+
+// Preferences survive a reload. Storage can throw (private mode, blocked
+// cookies), in which case the site just falls back to its defaults.
+const readPref = (key) => {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+const writePref = (key, value) => {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // Not persisted; the choice still applies for this visit.
+  }
+}
+
+// Inertial wheel scrolling. Touch keeps the phone's native scrolling, and
+// Lenis itself drops to 1:1 scrolling under prefers-reduced-motion. Anchor
+// links go through it too, and it honours each section's scroll-margin-top,
+// so they still stop below the fixed navbar.
+function useSmoothScroll(paused) {
+  const lenisRef = useRef(null)
+
+  useEffect(() => {
+    const lenis = new Lenis({ autoRaf: true, anchors: true, lerp: 0.09 })
+    lenisRef.current = lenis
+    return () => {
+      lenis.destroy()
+      lenisRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    const lenis = lenisRef.current
+    if (!lenis) return
+    if (paused) lenis.stop()
+    else lenis.start()
+  }, [paused])
+}
+
+// A soft glow that follows the pointer across [data-spotlight] cards. It only
+// writes two CSS variables; the glow itself is drawn in App.css.
+function useSpotlight() {
+  useEffect(() => {
+    if (!window.matchMedia('(hover: hover)').matches) return
+    const onMove = (e) => {
+      const card = e.target.closest?.('[data-spotlight]')
+      if (!card) return
+      const rect = card.getBoundingClientRect()
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`)
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`)
+    }
+    document.addEventListener('pointermove', onMove, { passive: true })
+    return () => document.removeEventListener('pointermove', onMove)
+  }, [])
+}
+
+// Which section is under the middle of the screen, for the nav highlight.
+function useActiveSection(ids) {
+  const [active, setActive] = useState(null)
+  const key = ids.join(',')
+
+  useEffect(() => {
+    const sections = key.split(',').map((id) => document.getElementById(id)).filter(Boolean)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        })
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    )
+    sections.forEach((section) => observer.observe(section))
+
+    // Above the first section there is nothing to highlight.
+    const first = sections[0]
+    const onScroll = () => {
+      if (first && first.getBoundingClientRect().top > window.innerHeight * 0.5) setActive(null)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [key])
+
+  return active
+}
+
+function useScrollReveal() {
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const root = document.documentElement
+    const rootStyle = getComputedStyle(root)
+    const EASING = {
+      out: rootStyle.getPropertyValue('--ease-out').trim(),
+      spring: rootStyle.getPropertyValue('--ease-spring').trim(),
+      // Exits accelerate away but must start moving at once, or a quick
+      // reverse feels like it lagged.
+      in: 'cubic-bezier(0.4, 0, 1, 1)',
+    }
+
+    const targets = [...document.querySelectorAll('[data-reveal]')]
+    const shown = new Map()
+    const running = new Map()
+
+    // Animate from wherever the element is right now to `to`. A transition
+    // to the resting pose drops itself when done, so a settled element is back
+    // on its own CSS; a transition to hidden holds (fill) until replaced.
+    const animateTo = (el, to, timing, pseudoElement) => {
+      const now = getComputedStyle(el, pseudoElement)
+      const from = Object.fromEntries(Object.keys(to).map((prop) => [prop, now[prop]]))
+      const key = pseudoElement ?? ''
+      const slots = running.get(el) ?? {}
+      slots[key]?.cancel()
+      const anim = el.animate([from, to], { fill: 'both', pseudoElement, ...timing })
+      slots[key] = anim
+      running.set(el, slots)
+      return anim
+    }
+
+    const atRest = (pose) => Object.fromEntries(Object.keys(pose).map((prop) => [prop, AT_REST[prop]]))
+
+    const play = (el, visible, delay, instant) => {
+      const dir = root.dir === 'rtl' ? -1 : 1
+      const hidden = (REVEAL_FROM[el.dataset.reveal] ?? REVEAL_FROM.up)(dir)
+      const run = (node, pose, timing, pseudoElement) => {
+        const anim = animateTo(node, visible ? atRest(pose) : pose, instant ? { duration: 0 } : timing, pseudoElement)
+        if (visible) anim.onfinish = () => anim.cancel()
+      }
+
+      run(el, hidden, visible
+        ? { duration: SHOW_MS, delay, easing: EASING.out }
+        : { duration: HIDE_MS, delay, easing: EASING.in })
+
+      for (const beat of REVEAL_BEATS) {
+        el.querySelectorAll(beat.selector).forEach((node, i) => {
+          run(node, beat.from, visible
+            ? { duration: beat.duration, delay: delay + beat.delay + i * (beat.step ?? 0), easing: EASING[beat.easing] }
+            : { duration: HIDE_MS * 0.6, delay, easing: EASING.in }, beat.pseudoElement)
+        })
+      }
+    }
+
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const vh = window.innerHeight
+      const entering = []
+      const leaving = []
+
+      for (const el of targets) {
+        const { top, bottom } = el.getBoundingClientRect()
+        const was = shown.get(el)
+        let next = was
+        if (top < vh * SHOW_LINE) next = true
+        else if (top > vh * HIDE_LINE || was === undefined) next = false
+        if (next === was) continue
+
+        shown.set(el, next)
+        // Nothing to watch off-screen, or on the first pass for anything not
+        // already on its way in - just set the pose.
+        const offscreen = bottom <= 0 || top >= vh
+        if (offscreen || (was === undefined && !next)) play(el, next, 0, true)
+        else (next ? entering : leaving).push(el)
+      }
+
+      entering.forEach((el, i) => play(el, true, Math.min(i, MAX_STAGGER_STEPS) * SHOW_STAGGER_MS))
+      leaving.reverse().forEach((el, i) => play(el, false, Math.min(i, MAX_STAGGER_STEPS) * HIDE_STAGGER_MS))
+    }
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+
+    update()
+    // From here the animations own visibility; drop the CSS pre-hide.
+    root.setAttribute('data-reveal-ready', '')
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+
+    // Switching language flips the text direction; anything still waiting
+    // off-screen has to be re-posed on the new reading side.
+    const dirWatch = new MutationObserver(() => {
+      shown.forEach((isShown, el) => {
+        if (!isShown) play(el, false, 0, true)
+      })
+    })
+    dirWatch.observe(root, { attributes: true, attributeFilter: ['dir'] })
+
+    return () => {
+      dirWatch.disconnect()
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      root.removeAttribute('data-reveal-ready')
+      running.forEach((slots) => Object.values(slots).forEach((anim) => anim.cancel()))
+    }
+  }, [])
+}
+
+const SECTION_IDS = ['services', 'gallery', 'testimonials', 'contact', 'social']
+
+// "Milena Najeeb" -> "MN", for the reviewer avatars.
+const initials = (name) =>
+  name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
+  // An explicit choice wins; otherwise follow the device's light/dark setting.
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = readPref('zt-theme')
+    if (saved) return saved === 'dark'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
   const [scrolled, setScrolled] = useState(false)
-  const [language, setLanguage] = useState('en')
+  const [language, setLanguage] = useState(() => (readPref('zt-lang') === 'ar' ? 'ar' : 'en'))
   const [menuOpen, setMenuOpen] = useState(false)
   const t = translations[language]
+  const activeSection = useActiveSection(SECTION_IDS)
+  useScrollReveal()
+  useSmoothScroll(menuOpen)
+  useSpotlight()
+
+  const toggleTheme = () => {
+    writePref('zt-theme', darkMode ? 'light' : 'dark')
+    setDarkMode(!darkMode)
+  }
+
+  const toggleLanguage = () => {
+    const next = language === 'en' ? 'ar' : 'en'
+    writePref('zt-lang', next)
+    setLanguage(next)
+  }
 
   const navItems = [
     { href: '#services', label: t.services },
@@ -225,6 +520,7 @@ function App() {
     { href: '#contact', label: t.contact },
     { href: '#social', label: t.followUs },
   ]
+  const isActive = (href) => href === `#${activeSection}`
 
   useEffect(() => {
     const handleScroll = () => {
@@ -288,19 +584,26 @@ function App() {
           </div>
           <nav className="nav-links">
             {navItems.map(({ href, label }) => (
-              <a key={href} href={href}>{label}</a>
+              <a
+                key={href}
+                href={href}
+                className={isActive(href) ? 'active' : undefined}
+                aria-current={isActive(href) ? 'true' : undefined}
+              >
+                {label}
+              </a>
             ))}
           </nav>
           <div className="navbar-buttons">
             <button
               className="language-toggle"
-              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+              onClick={toggleLanguage}
             >
               {language === 'en' ? 'العربية' : 'EN'}
             </button>
             <button
               className="theme-toggle"
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={toggleTheme}
               aria-label={darkMode ? t.lightModeLabel : t.darkModeLabel}
             >
               {darkMode ? <Sun size={22} /> : <Moon size={22} />}
@@ -318,9 +621,18 @@ function App() {
         </div>
         <nav id="mobile-nav" className="mobile-nav" hidden={!menuOpen}>
           {navItems.map(({ href, label }) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
+            <a
+              key={href}
+              href={href}
+              className={isActive(href) ? 'active' : undefined}
+              aria-current={isActive(href) ? 'true' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </a>
           ))}
         </nav>
+        <div className="scroll-progress" aria-hidden="true" />
       </header>
       {menuOpen && (
         <button
@@ -334,6 +646,10 @@ function App() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
+          <p className="hero-pill">
+            <span className="live-dot" aria-hidden="true" />
+            {t.liveNow}
+          </p>
           <h2 className="hero-subtitle">{t.welcome}</h2>
           <h1 className="hero-title">Zein Tyres</h1>
           <p className="hero-tagline">{t.tagline}</p>
@@ -343,37 +659,46 @@ function App() {
             <strong>{t.hours24}</strong>
           </p>
           <div className="hero-buttons">
-            <a href="#contact" className="btn btn-primary">{t.contactBtn}</a>
+            <a href="#contact" className="btn btn-primary">
+              {t.contactBtn}
+              <ArrowRight size={20} className="btn-arrow" aria-hidden="true" />
+            </a>
             <button className="btn btn-secondary" onClick={handleWhatsApp}>
-              <MessageCircle size={20} style={{display: 'inline', marginRight: '0.5rem'}} /> {t.whatsappBtn}
+              <MessageCircle size={20} aria-hidden="true" />
+              {t.whatsappBtn}
             </button>
           </div>
-          <p className="location-badge">{t.location}</p>
+          <p className="location-badge">
+            <MapPin size={18} aria-hidden="true" />
+            {t.location}
+          </p>
         </div>
-        <div className="hero-image">
-          <img src={shopPhoto} alt="Zein Tyres Shop" width="1024" height="768" fetchPriority="high" />
+        <div className="hero-visual">
+          <div className="hero-image">
+            <img src={shopPhoto} alt="Zein Tyres Shop" width="1024" height="768" fetchPriority="high" />
+          </div>
         </div>
       </section>
 
       {/* Quick Info Bar */}
-      <section className="quick-info">
-        <div className="info-card">
-          <Clock className="icon" size={32} />
+      <section className="quick-info" data-reveal="zoom">
+        <div className="info-card" data-reveal>
+          <span className="info-icon"><Clock size={26} aria-hidden="true" /></span>
           <h3>{t.open24}</h3>
           <p>{t.alwaysReady}</p>
         </div>
-        <div className="info-card">
-          <Phone className="icon" size={32} />
-          <h3><a href={`tel:+${PHONE.e164}`} className="info-link">{PHONE.local}</a></h3>
+        <div className="info-card" data-reveal>
+          <span className="info-icon"><Phone size={26} aria-hidden="true" /></span>
+          <h3><a href={`tel:+${PHONE.e164}`} className="info-link" dir="ltr">{PHONE.local}</a></h3>
           <p>{t.callWhatsapp}</p>
         </div>
-        <div className="info-card">
-          <Mail className="icon" size={32} />
+        <div className="info-card" data-reveal>
+          <span className="info-icon"><Mail size={26} aria-hidden="true" /></span>
           <h3>{t.emailUs}</h3>
           <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
         </div>
-        <div className="info-card">
-          <Truck className="icon" size={32} />
+        <div className="info-card" data-reveal>
+          <span className="info-icon"><Truck size={26} aria-hidden="true" /></span>
           <h3>{t.roadsideService}</h3>
           <p>{t.weComeToYou}</p>
         </div>
@@ -381,52 +706,38 @@ function App() {
 
       {/* Services Section */}
       <section id="services" className="services">
-        <div className="section-header">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.servicesEyebrow}</span>
           <h2>{t.ourServices}</h2>
           <p>{t.servicesDesc}</p>
         </div>
         <div className="services-grid">
-          <div className="service-card">
-            <Wrench className="service-icon" size={48} />
-            <h3>{t.tireSales}</h3>
-            <p>{t.tireSalesDesc}</p>
-          </div>
-          <div className="service-card">
-            <Hammer className="service-icon" size={48} />
-            <h3>{t.tireRepairs}</h3>
-            <p>{t.tireRepairsDesc}</p>
-          </div>
-          <div className="service-card">
-            <Gauge className="service-icon" size={48} />
-            <h3>{t.maintenance}</h3>
-            <p>{t.maintenanceDesc}</p>
-          </div>
-          <div className="service-card">
-            <Wrench className="service-icon" size={48} />
-            <h3>{t.wheelAlignment}</h3>
-            <p>{t.wheelAlignmentDesc}</p>
-          </div>
-          <div className="service-card">
-            <Disc className="service-icon" size={48} />
-            <h3>{t.rimSales}</h3>
-            <p>{t.rimSalesDesc}</p>
-          </div>
-          <div className="service-card">
-            <Cog className="service-icon" size={48} />
-            <h3>{t.rimRepairs}</h3>
-            <p>{t.rimRepairsDesc}</p>
-          </div>
+          {[
+            [Tag, t.tireSales, t.tireSalesDesc],
+            [Hammer, t.tireRepairs, t.tireRepairsDesc],
+            [Gauge, t.maintenance, t.maintenanceDesc],
+            [Crosshair, t.wheelAlignment, t.wheelAlignmentDesc],
+            [Disc, t.rimSales, t.rimSalesDesc],
+            [Cog, t.rimRepairs, t.rimRepairsDesc],
+          ].map(([Icon, title, desc]) => (
+            <div className="service-card" data-reveal data-spotlight key={title}>
+              <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+              <h3>{title}</h3>
+              <p>{desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Gallery Section */}
       <section id="gallery" className="gallery">
-        <div className="section-header">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.galleryEyebrow}</span>
           <h2>{t.ourShop}</h2>
           <p>{t.shopDesc}</p>
         </div>
         <div className="gallery-grid">
-          <div className="gallery-item">
+          <div className="gallery-item" data-reveal="zoom">
             <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
             <p>{t.professionalSetup}</p>
           </div>
@@ -435,29 +746,39 @@ function App() {
 
       {/* Testimonials Section */}
       <section id="testimonials" className="testimonials">
-        <div className="section-header">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.reviewsEyebrow}</span>
           <h2>{t.customerReviews}</h2>
           <p>{t.reviewsDesc}</p>
         </div>
-        <div className="testimonials-scroll" tabIndex={0}>
+        <div className="testimonials-scroll" tabIndex={0} data-lenis-prevent>
           {REVIEWS.map((review) => (
-            <div className="testimonial-card" key={review.author}>
-              <div className="stars" aria-label={`${review.rating} / 5`}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={20}
-                    className={star <= review.rating ? 'star-icon' : 'star-icon star-empty'}
-                    fill={star <= review.rating ? 'currentColor' : 'none'}
-                  />
-                ))}
+            <figure className="testimonial-card" key={review.author} data-reveal data-spotlight>
+              <div className="testimonial-top">
+                <div className="stars" aria-label={`${review.rating} / 5`}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={18}
+                      className={star <= review.rating ? 'star-icon' : 'star-icon star-empty'}
+                      fill={star <= review.rating ? 'currentColor' : 'none'}
+                    />
+                  ))}
+                </div>
+                <Quote size={32} className="quote-mark" aria-hidden="true" />
               </div>
-              <p>{language === 'ar' ? review.ar : review.en}</p>
-              <p className="author">- {review.author}</p>
-            </div>
+              <blockquote>{language === 'ar' ? review.ar : review.en}</blockquote>
+              <figcaption className="author">
+                <span className="avatar" aria-hidden="true">{initials(review.author)}</span>
+                <span className="author-text">
+                  <strong>{review.author}</strong>
+                  <small>{t.googleReview}</small>
+                </span>
+              </figcaption>
+            </figure>
           ))}
         </div>
-        <p className="reviews-link">
+        <p className="reviews-link" data-reveal>
           <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">
             {t.seeAllReviews}
           </a>
@@ -466,40 +787,59 @@ function App() {
 
       {/* Contact Section */}
       <section id="contact" className="contact">
-        <div className="section-header">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.contactEyebrow}</span>
           <h2>{t.getInTouch}</h2>
           <p>{t.helpDesc}</p>
         </div>
         <div className="contact-container">
           <div className="contact-info">
-            <div className="contact-item">
-              <h3><Phone size={24} className="contact-icon" /> {t.phoneLabel}</h3>
-              <a href={`tel:+${PHONE.e164}`}>{PHONE.local}</a>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><Phone size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.phoneLabel}</h3>
+                <a href={`tel:+${PHONE.e164}`} dir="ltr">{PHONE.local}</a>
+              </div>
             </div>
-            <div className="contact-item">
-              <h3><MessageCircle size={24} className="contact-icon" /> {t.whatsappLabel}</h3>
-              <button onClick={handleWhatsApp} className="link-button">
-                {PHONE.intl}
-              </button>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><MessageCircle size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.whatsappLabel}</h3>
+                <button onClick={handleWhatsApp} className="link-button" dir="ltr">
+                  {PHONE.intl}
+                </button>
+              </div>
             </div>
-            <div className="contact-item">
-              <h3><Mail size={24} className="contact-icon" /> {t.emailLabel}</h3>
-              <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><Mail size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.emailLabel}</h3>
+                <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+              </div>
             </div>
-            <div className="contact-item">
-              <h3><LifeBuoy size={24} className="contact-icon" /> {t.supportLabel}</h3>
-              <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><LifeBuoy size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.supportLabel}</h3>
+                <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
+              </div>
             </div>
-            <div className="contact-item">
-              <h3><MapPin size={24} className="contact-icon" /> {t.locationLabel}</h3>
-              <p>{t.amchitLeb}<br />{t.facingMcDonald}</p>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><MapPin size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.locationLabel}</h3>
+                <p>{t.amchitLeb}<br />{t.facingMcDonald}</p>
+              </div>
             </div>
-            <div className="contact-item">
-              <h3><Clock size={24} className="contact-icon" /> {t.hoursLabel}</h3>
-              <p>Open 24/7<br />Always Available</p>
+            <div className="contact-item" data-reveal="start" data-spotlight>
+              <span className="contact-icon"><Clock size={22} aria-hidden="true" /></span>
+              <div className="contact-text">
+                <h3>{t.hoursLabel}</h3>
+                <p>{t.open24}<br />{t.alwaysReady}</p>
+              </div>
             </div>
           </div>
-          <div className="map-container">
+          <div className="map-container" data-reveal="end">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.5235848748753!2d35.59088!3d34.13333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151f5db3b7c5d5ad%3A0xf90bd77fcc58d36a!2sZein%20Tyres!5e0!3m2!1sen!2slb!4v1"
               allowFullScreen=""
@@ -513,20 +853,21 @@ function App() {
 
       {/* Social Media Section */}
       <section id="social" className="social-media">
-        <div className="section-header">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.socialEyebrow}</span>
           <h2>{t.followUs}</h2>
           <p>{t.socialDesc}</p>
         </div>
         <div className="social-links">
-          <a href="https://m.me/61593747883398" target="_blank" rel="noopener noreferrer" className="social-link facebook">
+          <a href="https://m.me/61593747883398" target="_blank" rel="noopener noreferrer" data-reveal className="social-link facebook">
             <FacebookLogo size={40} />
             <span>{t.facebook}</span>
           </a>
-          <a href="https://ig.me/m/zein_tyres" target="_blank" rel="noopener noreferrer" className="social-link instagram">
+          <a href="https://ig.me/m/zein_tyres" target="_blank" rel="noopener noreferrer" data-reveal className="social-link instagram">
             <InstagramLogo size={40} />
             <span>{t.instagram}</span>
           </a>
-          <a href="https://www.tiktok.com/@zein.tires" target="_blank" rel="noopener noreferrer" className="social-link tiktok">
+          <a href="https://www.tiktok.com/@zein.tires" target="_blank" rel="noopener noreferrer" data-reveal className="social-link tiktok">
             <TikTokLogo size={40} />
             <span>{t.tiktok}</span>
           </a>
@@ -535,9 +876,33 @@ function App() {
 
       {/* Footer */}
       <footer className="footer">
-        <div className="footer-content">
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <div className="footer-logo">
+              <img src={logoDark} alt="" width="56" height="48" loading="lazy" />
+              <span>Zein Tyres</span>
+            </div>
+            <p>{t.professionalService}</p>
+            <p className="footer-live">
+              <span className="live-dot" aria-hidden="true" />
+              {t.liveNow}
+            </p>
+          </div>
+          <nav className="footer-col" aria-label={t.quickLinks}>
+            <h3>{t.quickLinks}</h3>
+            {navItems.map(({ href, label }) => (
+              <a key={href} href={href}>{label}</a>
+            ))}
+          </nav>
+          <div className="footer-col">
+            <h3>{t.contact}</h3>
+            <a href={`tel:+${PHONE.e164}`} dir="ltr">{PHONE.local}</a>
+            <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+            <span>{t.facingMcDonald}<br />{t.amchitLeb}</span>
+          </div>
+        </div>
+        <div className="footer-bottom">
           <p>{t.copyright}</p>
-          <p>{t.professionalService}</p>
         </div>
       </footer>
     </div>

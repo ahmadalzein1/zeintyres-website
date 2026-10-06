@@ -5,50 +5,114 @@
 }
 
 :root {
-  --primary-color: #1a1a1a;
+  color-scheme: light;
+  /* Brand */
   --secondary-color: #dc143c;
+  --brand-deep: #a80d2e;
+  --brand-tint: rgba(220, 20, 60, 0.08);
+  --brand-tint-strong: rgba(220, 20, 60, 0.16);
+  --brand-glow: rgba(220, 20, 60, 0.35);
+  /* Neutrals */
+  --heading-color: #111114;
+  --text-color: #2a2a31;
+  --muted-color: #62626d;
   --accent-color: #ffffff;
-  --text-color: #333333;
-  --bg-color: #f5f5f5;
-  --border-color: #e0e0e0;
-  --navbar-scrolled-bg: rgba(255, 255, 255, 0.95);
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+  --bg-color: #f6f6f7;
+  --surface: #ffffff;
+  --surface-2: #efeff1;
+  --border-color: rgba(17, 17, 20, 0.08);
+  --border-strong: rgba(17, 17, 20, 0.15);
+  --navbar-scrolled-bg: rgba(246, 246, 247, 0.78);
+  --footer-bg: #0f0f12;
+  /* Depth. Layered shadows: a tight contact shadow plus a wide soft one. */
+  --shadow-sm: 0 1px 2px rgba(16, 16, 20, 0.05);
+  --shadow: 0 1px 2px rgba(16, 16, 20, 0.04), 0 8px 24px -8px rgba(16, 16, 20, 0.12);
+  --shadow-lg: 0 2px 6px rgba(16, 16, 20, 0.04), 0 28px 56px -16px rgba(16, 16, 20, 0.24);
+  --radius: 16px;
+  --radius-lg: 24px;
+  /* Plus Jakarta Sans has no Arabic glyphs, so Arabic text falls through to
+     IBM Plex Sans Arabic automatically. */
+  --font-sans: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   /* Height of the fixed navbar. Sections and the hero offset themselves by
      this, so it must be kept in sync with the navbar padding + logo size
      at every breakpoint. */
   --nav-h: 92px;
   /* Horizontal page gutter, tightened on small screens. */
   --gutter: 2rem;
+  /* Motion. Expo-out reads as "fast then settles", which is what makes the
+     reveals feel deliberate rather than floaty. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 :root[data-theme='dark'] {
-  --primary-color: #0a0a0a;
+  color-scheme: dark;
   --secondary-color: #ff1744;
-  --accent-color: #ffffff;
-  --text-color: #ffffff;
-  --bg-color: #1a1a1a;
-  --border-color: #333333;
-  --navbar-scrolled-bg: rgba(10, 10, 10, 0.95);
-  --shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
-  --shadow-lg: 0 10px 25px rgba(255, 255, 255, 0.1);
+  --brand-deep: #c4102f;
+  --brand-tint: rgba(255, 23, 68, 0.1);
+  --brand-tint-strong: rgba(255, 23, 68, 0.2);
+  --brand-glow: rgba(255, 23, 68, 0.35);
+  --heading-color: #f5f5f7;
+  --text-color: #e4e4e9;
+  --muted-color: #9d9da8;
+  --bg-color: #0b0b0d;
+  --surface: #141417;
+  --surface-2: #1c1c20;
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --navbar-scrolled-bg: rgba(11, 11, 13, 0.72);
+  --footer-bg: #060607;
+  /* The old dark theme used white shadows, which read as a glow. Depth on a
+     dark page comes from black shadows plus the hairline borders. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.4), 0 28px 56px -16px rgba(0, 0, 0, 0.85);
 }
 
 html, body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-sans);
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* Belt and braces against sideways scroll on phones: a single overflowing
-     child used to be able to push the whole page wider than the viewport. */
-  overflow-x: hidden;
   max-width: 100%;
 }
 
-/* Anchor links must not land under the fixed navbar. */
+body {
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Belt and braces against sideways scroll on phones: a single overflowing
+   child used to be able to push the whole page wider than the viewport.
+   body uses clip, not hidden - hidden would make body a scroll container
+   that never scrolls, and the CSS scroll timelines below would latch onto
+   it and never move. */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: clip;
+}
+
+/* Anchor links must not land under the fixed navbar. Lenis takes over
+   scrolling when it runs, and native smooth scrolling would fight it. */
 html {
   scroll-behavior: smooth;
+}
+
+html.lenis {
+  scroll-behavior: auto;
+}
+
+::selection {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -77,8 +141,13 @@ body.menu-open {
 
 /* Nothing should be able to spill sideways: long words, unbroken phone
    numbers and Arabic strings all wrap instead of widening the page. */
-.app :where(h1, h2, h3, p, a, span, button) {
+.app :where(h1, h2, h3, p, a, span, button, strong, small, blockquote) {
   overflow-wrap: break-word;
+}
+
+/* Letter-spacing pulls Arabic letters apart and breaks their joins. */
+:root[lang='ar'] .app :where(h1, h2, h3, p, a, span, button, strong, small, blockquote) {
+  letter-spacing: 0;
 }
 
 section[id] {
@@ -122,19 +191,12 @@ html[dir="rtl"] .hero-content {
 
 html[dir="rtl"] .section-header {
   text-align: right;
+  margin-right: 0;
 }
 
-html[dir="rtl"] .service-card,
-html[dir="rtl"] .gallery-item,
-html[dir="rtl"] .testimonial-card {
-  text-align: right;
-}
-
-html[dir="rtl"] .contact-item {
-  text-align: right;
-}
-
-/* Navigation/Header */
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
 .navbar {
   position: fixed;
   top: 0;
@@ -142,14 +204,20 @@ html[dir="rtl"] .contact-item {
   right: 0;
   z-index: 1000;
   background-color: transparent;
-  transition: var(--transition);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
   padding: 1rem 0;
 }
 
 .navbar.scrolled {
   background-color: var(--navbar-scrolled-bg);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(10px);
+  border-bottom-color: var(--border-color);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
 }
 
 /* The open drawer needs a fully opaque backdrop even at scroll position 0 —
@@ -157,6 +225,7 @@ html[dir="rtl"] .contact-item {
 .navbar.menu-open {
   background-color: var(--bg-color);
   box-shadow: var(--shadow-lg);
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
@@ -175,7 +244,7 @@ html[dir="rtl"] .contact-item {
 .logo-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   min-width: 0;
 }
 
@@ -189,86 +258,89 @@ html[dir="rtl"] .contact-item {
 }
 
 .brand-name {
-  font-size: 1.8rem;
-  font-weight: bold;
+  font-size: 1.6rem;
+  font-weight: 800;
   color: var(--secondary-color);
-  letter-spacing: 1px;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 0.25rem;
   align-items: center;
 }
 
 .nav-links a {
-  color: var(--text-color);
+  color: var(--muted-color);
   text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition);
-  position: relative;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  transition: color 0.2s ease, background-color 0.2s ease;
   /* "Follow Us" is the only two-word link — keep it on one line when the row
      gets tight on tablets rather than letting it wrap under itself. */
   white-space: nowrap;
 }
 
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--secondary-color);
-  transition: width 0.3s ease;
+.nav-links a.active {
+  color: var(--secondary-color);
+  background-color: var(--brand-tint);
 }
 
 @media (hover: hover) {
   .nav-links a:hover {
-    color: var(--secondary-color);
+    color: var(--heading-color);
+    background-color: var(--surface-2);
   }
 
-  .nav-links a:hover::after {
-    width: 100%;
+  .nav-links a.active:hover {
+    color: var(--secondary-color);
+    background-color: var(--brand-tint-strong);
   }
 }
 
 .navbar-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.6rem;
   align-items: center;
   flex-shrink: 0;
 }
 
-.language-toggle {
-  background: none;
-  border: 2px solid var(--secondary-color);
-  color: var(--text-color);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+.language-toggle,
+.theme-toggle,
+.nav-toggle {
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--heading-color);
   cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.language-toggle {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
   font-size: 0.95rem;
   font-weight: 600;
-  transition: var(--transition);
   min-width: 100px;
   min-height: 44px;
   white-space: nowrap;
 }
 
 .theme-toggle {
-  background: none;
-  border: 2px solid var(--secondary-color);
-  color: var(--text-color);
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
   flex-shrink: 0;
 }
 
@@ -276,17 +348,28 @@ html[dir="rtl"] .contact-item {
    .nav-links so the sections are never unreachable. */
 .nav-toggle {
   display: none;
-  background: none;
-  border: 2px solid var(--secondary-color);
-  color: var(--text-color);
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  cursor: pointer;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
   flex-shrink: 0;
+}
+
+.language-toggle:active,
+.theme-toggle:active,
+.nav-toggle:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) {
+  .language-toggle:hover,
+  .theme-toggle:hover,
+  .nav-toggle:hover {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    background-color: var(--brand-tint);
+  }
 }
 
 /* Slide-down mobile menu */
@@ -301,13 +384,13 @@ html[dir="rtl"] .contact-item {
 }
 
 .mobile-nav a {
-  color: var(--text-color);
+  color: var(--heading-color);
   text-decoration: none;
   font-weight: 600;
   font-size: 1.05rem;
-  padding: 0.9rem 0.5rem;
+  padding: 0.9rem 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -315,13 +398,24 @@ html[dir="rtl"] .contact-item {
   border-bottom: none;
 }
 
+.mobile-nav a.active {
+  color: var(--secondary-color);
+  background-color: var(--brand-tint);
+}
+
 .mobile-nav a:active {
   color: var(--secondary-color);
-  background-color: rgba(220, 20, 60, 0.08);
+  background-color: var(--brand-tint);
 }
 
 html[dir="rtl"] .mobile-nav a {
   text-align: right;
+}
+
+@media (hover: hover) {
+  .mobile-nav a:hover {
+    color: var(--secondary-color);
+  }
 }
 
 /* Tap-anywhere-to-close layer behind the open menu. */
@@ -335,30 +429,12 @@ html[dir="rtl"] .mobile-nav a {
   cursor: pointer;
 }
 
-@media (hover: hover) {
-  .language-toggle:hover {
-    background-color: var(--secondary-color);
-    color: var(--bg-color);
-    transform: scale(1.05);
-  }
-
-  .theme-toggle:hover {
-    background-color: var(--secondary-color);
-    transform: scale(1.1);
-  }
-
-  .nav-toggle:hover {
-    background-color: var(--secondary-color);
-    color: var(--accent-color);
-  }
-
-  .mobile-nav a:hover {
-    color: var(--secondary-color);
-  }
-}
-
-/* Hero Section */
+/* ==========================================================================
+   Hero
+   ========================================================================== */
 .hero {
+  position: relative;
+  isolation: isolate;
   margin-top: var(--nav-h);
   padding: 4rem var(--gutter);
   display: grid;
@@ -371,83 +447,196 @@ html[dir="rtl"] .mobile-nav a {
   min-height: 80vh;
 }
 
+/* A soft brand glow behind the photo, and a faint dot grid that fades out
+   towards the edges. Both are decoration only. */
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-block-start: 5%;
+  inset-inline-end: -5%;
+  width: 55%;
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, var(--brand-glow), transparent);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.95rem 0.45rem 0.8rem;
+  margin-bottom: 1.5rem;
+  border-radius: 999px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+/* Green "we're open" dot; the pulse ring is added under Motion. */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  flex-shrink: 0;
+}
+
 .hero-content h2 {
-  font-size: clamp(1rem, 3.2vw, 1.2rem);
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--secondary-color);
-  margin-bottom: 0.5rem;
-  letter-spacing: 2px;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .hero-title {
-  font-size: clamp(2.25rem, 9vw, 4rem);
-  font-weight: bold;
+  font-size: clamp(2.75rem, 8vw, 5rem);
+  font-weight: 800;
   color: var(--secondary-color);
-  margin-bottom: 1rem;
-  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  line-height: 1;
+  letter-spacing: -0.035em;
 }
 
 .hero-tagline {
-  font-size: clamp(1.05rem, 4vw, 1.5rem);
-  color: var(--text-color);
+  font-size: clamp(1.15rem, 3.6vw, 1.5rem);
+  color: var(--heading-color);
   margin-bottom: 1rem;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .hero-description {
-  font-size: clamp(1rem, 3.2vw, 1.1rem);
-  color: var(--text-color);
+  font-size: clamp(1rem, 3.2vw, 1.075rem);
+  color: var(--muted-color);
   margin-bottom: 2rem;
-  line-height: 1.6;
+  line-height: 1.7;
+}
+
+.hero-description strong {
+  color: var(--heading-color);
+  font-weight: 700;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.85rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
 .btn {
-  padding: 1rem 2rem;
-  min-height: 48px;
-  font-size: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  padding: 0.95rem 1.6rem;
+  min-height: 52px;
+  font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
-  font-weight: 600;
-  transition: var(--transition);
+  font-weight: 700;
+  letter-spacing: -0.005em;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.6rem;
   font-family: inherit;
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.btn svg {
+  flex-shrink: 0;
 }
 
 .btn-primary {
   background-color: var(--secondary-color);
   color: var(--accent-color);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 12px 28px -10px var(--brand-glow);
+}
+
+/* A light sweep that crosses the button on hover. */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  translate: -120% 0;
+  transition: translate 0.8s var(--ease-out);
+  pointer-events: none;
+}
+
+.btn-arrow {
+  transition: translate 0.3s var(--ease-out);
+}
+
+html[dir='rtl'] .btn-arrow {
+  scale: -1 1;
 }
 
 .btn-secondary {
-  background-color: transparent;
-  color: var(--secondary-color);
-  border: 2px solid var(--secondary-color);
+  background-color: var(--surface);
+  color: var(--heading-color);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary svg {
+  color: #25d366;
 }
 
 /* Touch devices keep :hover styles stuck after a tap, so lift-on-hover
    effects are gated to real pointers and replaced by :active feedback. */
 @media (hover: hover) {
   .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(220, 20, 60, 0.4);
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 18px 36px -10px var(--brand-glow);
+  }
+
+  .btn-primary:hover::after {
+    translate: 120% 0;
+  }
+
+  .btn-primary:hover .btn-arrow {
+    translate: 4px 0;
+  }
+
+  html[dir='rtl'] .btn-primary:hover .btn-arrow {
+    translate: -4px 0;
   }
 
   .btn-secondary:hover {
-    background-color: var(--secondary-color);
-    color: var(--accent-color);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    border-color: #25d366;
+    box-shadow: 0 12px 28px -12px rgba(37, 211, 102, 0.5);
   }
 }
 
@@ -456,15 +645,27 @@ html[dir="rtl"] .mobile-nav a {
 }
 
 .location-badge {
-  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+  color: var(--muted-color);
+  font-weight: 500;
+}
+
+.location-badge svg {
   color: var(--secondary-color);
-  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.hero-visual {
+  position: relative;
 }
 
 .hero-image {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
 }
 
@@ -472,57 +673,78 @@ html[dir="rtl"] .mobile-nav a {
   width: 100%;
   height: auto;
   display: block;
-  transition: var(--transition);
   object-fit: cover;
+  transition: transform 0.8s var(--ease-out);
 }
 
 @media (hover: hover) {
   .hero-image:hover img {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 }
 
-/* Quick Info Bar */
+/* ==========================================================================
+   Quick Info Bar
+   ========================================================================== */
 .quick-info {
+  position: relative;
+  overflow: hidden;
   display: grid;
-  /* min() keeps the track from demanding 250px on a 320px-wide phone,
+  /* min() keeps the track from demanding 240px on a 320px-wide phone,
      which is what forced the old horizontal overflow. */
-  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  gap: 2rem;
-  padding: 4rem var(--gutter);
-  max-width: 1200px;
-  margin: 0 auto 4rem;
-  background: linear-gradient(135deg, var(--secondary-color), rgba(220, 20, 60, 0.8));
-  border-radius: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 1rem;
+  padding: 1.25rem;
+  /* Lines up with the hero content edges instead of the viewport's. */
+  width: calc(min(1200px, 100%) - 2 * var(--gutter));
+  margin: 0 auto 3rem;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 50%),
+    linear-gradient(135deg, var(--secondary-color), var(--brand-deep));
+  box-shadow: 0 30px 60px -28px var(--brand-glow);
 }
 
 .info-card {
   text-align: center;
   color: var(--accent-color);
-  transition: var(--transition);
+  padding: 1.75rem 1.25rem;
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: transform 0.35s var(--ease-out), background-color 0.3s ease;
 }
 
 @media (hover: hover) {
   .info-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    background-color: rgba(255, 255, 255, 0.12);
   }
 }
 
-.info-card .icon {
-  font-size: 2.5rem;
-  display: block;
+.info-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto 1rem;
-  color: var(--accent-color);
+  background-color: #fff;
+  color: var(--secondary-color);
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.35);
 }
 
 .info-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.35rem;
 }
 
 .info-card p {
-  font-size: 0.95rem;
-  opacity: 0.95;
+  font-size: 0.92rem;
+  opacity: 0.85;
 }
 
 /* Tap-to-call / tap-to-email straight from the info bar. */
@@ -545,84 +767,152 @@ html[dir="rtl"] .mobile-nav a {
 @media (hover: hover) {
   .info-link:hover {
     text-decoration: underline;
+    text-underline-offset: 4px;
   }
 }
 
-/* Section Styling */
+/* ==========================================================================
+   Sections
+   ========================================================================== */
 .services,
 .gallery,
 .testimonials,
 .contact {
-  padding: 4rem var(--gutter);
+  padding: 4.5rem var(--gutter);
   max-width: 1200px;
-  margin: 0 auto 4rem;
+  margin: 0 auto 2rem;
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 3rem;
+  max-width: 640px;
+  margin: 0 auto 3.5rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--secondary-color);
+}
+
+/* Short rule before the label; it draws in with the section reveal. */
+.eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background-color: currentColor;
+  transform-origin: left;
+}
+
+html[dir='rtl'] .eyebrow::before {
+  transform-origin: right;
 }
 
 .section-header h2 {
-  font-size: clamp(1.65rem, 6vw, 2.5rem);
-  margin-bottom: 1rem;
-  color: var(--primary-color);
-}
-
-:root[data-theme='dark'] .section-header h2 {
-  color: var(--accent-color);
+  font-size: clamp(1.9rem, 5.5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.9rem;
+  color: var(--heading-color);
 }
 
 .section-header p {
   font-size: 1.1rem;
-  color: var(--text-color);
-  opacity: 0.8;
+  line-height: 1.6;
+  color: var(--muted-color);
+}
+
+/* Cards that carry a pointer-following glow (see useSpotlight in App.jsx).
+   isolation keeps the glow above the card's background but under its
+   content without touching the children's positioning. */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-spotlight]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), var(--brand-tint-strong), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  [data-spotlight]:hover::before {
+    opacity: 1;
+  }
 }
 
 /* Services Section */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 1.25rem;
 }
 
 .service-card {
-  background-color: var(--accent-color);
+  background-color: var(--surface);
   padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-  border-left: 4px solid var(--secondary-color);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  text-align: start;
+  transition:
+    transform 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    border-color 0.3s ease;
 }
 
-:root[data-theme='dark'] .service-card {
-  background-color: #2a2a2a;
-  color: var(--accent-color);
+.service-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.25rem;
+  border-radius: 14px;
+  background-color: var(--brand-tint);
+  color: var(--secondary-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.service-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  color: var(--heading-color);
+}
+
+.service-card p {
+  color: var(--muted-color);
+  line-height: 1.65;
 }
 
 @media (hover: hover) {
   .service-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--brand-tint-strong);
   }
-}
 
-.service-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: var(--secondary-color);
-}
-
-.service-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  color: var(--secondary-color);
-}
-
-.service-card p {
-  color: var(--text-color);
-  line-height: 1.6;
+  .service-card:hover .service-icon {
+    background-color: var(--secondary-color);
+    color: #fff;
+  }
 }
 
 /* Gallery Section */
@@ -636,24 +926,23 @@ html[dir="rtl"] .mobile-nav a {
 }
 
 .gallery-item {
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
   aspect-ratio: 1;
   box-shadow: var(--shadow-lg);
-  transition: var(--transition);
 }
 
 .gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition);
+  transition: transform 0.8s var(--ease-out);
 }
 
 @media (hover: hover) {
   .gallery-item:hover img {
-    transform: scale(1.1);
+    transform: scale(1.06);
   }
 }
 
@@ -662,10 +951,12 @@ html[dir="rtl"] .mobile-nav a {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.7);
+  padding: 3rem 1.5rem 1.25rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.78), transparent);
   color: var(--accent-color);
-  padding: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: start;
 }
 
 /* Testimonials Section */
@@ -674,7 +965,8 @@ html[dir="rtl"] .mobile-nav a {
    cards' hover lift and shadow, which a flush edge would clip. */
 .testimonials-scroll {
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 1.25rem;
   max-height: 460px;
   overflow-y: auto;
   padding: 0.75rem;
@@ -698,44 +990,38 @@ html[dir="rtl"] .mobile-nav a {
 }
 
 .testimonial-card {
-  background-color: var(--accent-color);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-  border-top: 4px solid var(--secondary-color);
-}
-
-:root[data-theme='dark'] .testimonial-card {
-  background-color: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  padding: 1.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    border-color 0.3s ease;
 }
 
 @media (hover: hover) {
   .testimonial-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--brand-tint-strong);
   }
 }
 
-.testimonial-card .stars {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+.testimonial-top {
   display: flex;
-  gap: 0.3rem;
-  color: #ffc107;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
 }
 
-.testimonial-card p {
-  color: var(--text-color);
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  font-style: italic;
-}
-
-.testimonial-card .author {
-  font-weight: 600;
-  color: var(--secondary-color);
-  font-style: normal;
+.testimonial-card .stars {
+  display: flex;
+  gap: 0.2rem;
+  color: #f5b301;
 }
 
 /* Reviews are quoted with their real rating, so a four-star one needs an
@@ -744,20 +1030,87 @@ html[dir="rtl"] .mobile-nav a {
   opacity: 0.45;
 }
 
+.quote-mark {
+  color: var(--secondary-color);
+  opacity: 0.18;
+  flex-shrink: 0;
+}
+
+.testimonial-card blockquote {
+  flex: 1;
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.65;
+  color: var(--heading-color);
+}
+
+.testimonial-card .author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--secondary-color), var(--brand-deep));
+}
+
+.author-text {
+  min-width: 0;
+}
+
+.author-text strong,
+.author-text small {
+  display: block;
+}
+
+.author-text strong {
+  font-size: 0.95rem;
+  color: var(--heading-color);
+  text-transform: capitalize;
+}
+
+.author-text small {
+  font-size: 0.8rem;
+  color: var(--muted-color);
+}
+
 .reviews-link {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
 .reviews-link a {
-  color: var(--secondary-color);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
+  color: var(--heading-color);
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 @media (hover: hover) {
   .reviews-link a:hover {
-    text-decoration: underline;
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    background-color: var(--brand-tint);
   }
 }
 
@@ -765,52 +1118,74 @@ html[dir="rtl"] .mobile-nav a {
 .contact-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+  gap: 2rem;
+  align-items: stretch;
 }
 
 .contact-info {
   display: grid;
-  gap: 2rem;
+  gap: 0.9rem;
 }
 
 .contact-item {
-  padding: 1.5rem;
-  background-color: var(--accent-color);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-}
-
-:root[data-theme='dark'] .contact-item {
-  background-color: #2a2a2a;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out),
+    border-color 0.3s ease;
 }
 
 @media (hover: hover) {
   .contact-item:hover {
-    transform: translateX(5px);
+    transform: translateX(4px);
+    box-shadow: var(--shadow);
+    border-color: var(--brand-tint-strong);
+  }
+
+  html[dir='rtl'] .contact-item:hover {
+    transform: translateX(-4px);
   }
 }
 
-.contact-item h3 {
-  color: var(--secondary-color);
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+.contact-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--brand-tint);
+  color: var(--secondary-color);
 }
 
-.contact-icon {
-  flex-shrink: 0;
+.contact-text {
+  min-width: 0;
+}
+
+.contact-text h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-color);
+  margin-bottom: 0.1rem;
 }
 
 .contact-item a,
 .contact-item p {
-  color: var(--text-color);
+  color: var(--heading-color);
   text-decoration: none;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 /* Calling, messaging and emailing are the whole point of this section on a
@@ -820,22 +1195,23 @@ html[dir="rtl"] .mobile-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin: -0.25rem -0.5rem;
+  margin: -0.4rem -0.5rem;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
 }
 
 .contact-item a:active,
 .contact-item .link-button:active {
-  background-color: rgba(220, 20, 60, 0.1);
+  background-color: var(--brand-tint);
   color: var(--secondary-color);
 }
 
 .link-button {
   background: none;
   border: none;
-  color: var(--text-color);
-  font-size: 1.1rem;
+  color: var(--heading-color);
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -849,78 +1225,86 @@ html[dir="rtl"] .mobile-nav a {
   }
 }
 
+/* Next to the contact list the map stretches to the list's height; stacked
+   on smaller screens it falls back to the min-height. */
 .map-container {
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-lg);
 }
 
-/* The iframe used to carry a hardcoded height="400"; sizing it here lets the
-   map shrink sensibly on a phone instead of eating the whole screen. */
 .map-container iframe {
   display: block;
   width: 100%;
-  height: clamp(260px, 45vh, 400px);
+  height: 100%;
+  min-height: clamp(260px, 45vh, 400px);
   border: 0;
 }
 
-/* Footer */
-.footer {
-  background-color: var(--primary-color);
-  color: var(--accent-color);
-  padding: 2rem;
-  text-align: center;
-  margin-top: 4rem;
-}
-
-.footer-content p {
-  margin: 0.5rem 0;
+/* Google's embed has no dark style; inverting it and rotating the hue back
+   gives a dark map whose water and parks still read correctly. */
+:root[data-theme='dark'] .map-container iframe {
+  filter: invert(0.9) hue-rotate(180deg) saturate(0.8);
 }
 
 /* Social Media Section */
 .social-media {
-  padding: 4rem var(--gutter);
+  padding: 4.5rem var(--gutter);
   max-width: 1200px;
-  margin: 0 auto 4rem;
+  margin: 0 auto 2rem;
   text-align: center;
 }
 
 .social-links {
   display: flex;
-  gap: 3rem;
+  gap: 1.25rem;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-top: 2rem;
 }
 
 .social-link {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 2rem;
+  gap: 0.9rem;
+  padding: 1.75rem 2rem;
   /* Equal cards regardless of label length — "TikTok" is shorter than the rest. */
   min-width: 11rem;
-  border-radius: 12px;
-  background-color: var(--accent-color);
-  box-shadow: var(--shadow);
-  transition: var(--transition);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
   text-decoration: none;
-  color: var(--text-color);
-  font-weight: 600;
-  font-size: 1.1rem;
+  color: var(--heading-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition:
+    transform 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
-:root[data-theme='dark'] .social-link {
-  background-color: #2a2a2a;
-  color: var(--accent-color);
+.social-link svg {
+  transition: color 0.3s ease, stroke 0.3s ease;
+}
+
+.social-link.facebook svg {
+  color: #1877f2;
+}
+
+.social-link.instagram svg {
+  color: #dd2a7b;
 }
 
 @media (hover: hover) {
   .social-link:hover {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     box-shadow: var(--shadow-lg);
+    border-color: transparent;
   }
 
   .social-link.facebook:hover {
@@ -952,8 +1336,269 @@ html[dir="rtl"] .mobile-nav a {
   }
 }
 
-.social-link svg {
-  transition: var(--transition);
+/* Footer */
+.footer {
+  background-color: var(--footer-bg);
+  color: rgba(255, 255, 255, 0.68);
+  margin-top: 4rem;
+  padding: 4rem var(--gutter) 0;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+
+/* Footer content lines up with the page content above, which is 1200px
+   including the gutter on each side. */
+.footer-inner {
+  max-width: calc(1200px - 2 * var(--gutter));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.footer-logo img {
+  width: 56px;
+  height: auto;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+.footer-logo span {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.footer-brand p {
+  max-width: 34ch;
+  line-height: 1.6;
+}
+
+.footer-brand .footer-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.footer-col h3 {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.footer-col a,
+.footer-col span {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.35rem 0;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .footer-col a:hover {
+    color: #fff;
+  }
+}
+
+.footer-bottom {
+  max-width: calc(1200px - 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 1.5rem 0 calc(1.5rem + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   Motion
+   Two layers, both off under prefers-reduced-motion:
+   1. Entrance and reveal - time-based. The hero plays once on load, here.
+      Everything tagged [data-reveal] is driven by useScrollReveal() in
+      App.jsx, which plays it in on the way down and back out on the way up.
+      Both animate the individual translate / scale / rotate properties so
+      they never fight the hover effects, which use transform.
+   2. Scroll-linked - progress bar, hero exit and gallery parallax are tied
+      directly to scroll position with CSS scroll timelines. Browsers
+      without them simply skip this layer.
+   ========================================================================== */
+
+/* Lives on the bottom edge of the navbar; only shown where scroll timelines
+   are supported. */
+.scroll-progress {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand-deep), var(--secondary-color));
+  box-shadow: 0 0 12px var(--brand-glow);
+  transform-origin: left;
+  scale: 0 1;
+  pointer-events: none;
+}
+
+html[dir='rtl'] .scroll-progress {
+  transform-origin: right;
+  background: linear-gradient(270deg, var(--brand-deep), var(--secondary-color));
+}
+
+.navbar.menu-open .scroll-progress {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live-dot {
+    animation: live-pulse 2s ease-out infinite;
+  }
+
+  /* --- Hero entrance ---------------------------------------------------- */
+  .hero-content > * {
+    animation: hero-rise 1s var(--ease-out) backwards;
+  }
+
+  .hero-content > :nth-child(1) { animation-delay: 0.05s; }
+  .hero-content > :nth-child(2) { animation-delay: 0.12s; }
+  .hero-content > :nth-child(3) { animation-delay: 0.2s; }
+  .hero-content > :nth-child(4) { animation-delay: 0.3s; }
+  .hero-content > :nth-child(5) { animation-delay: 0.4s; }
+  .hero-content > :nth-child(6) { animation-delay: 0.52s; }
+  .hero-content > :nth-child(7) { animation-delay: 0.64s; }
+
+  .hero-image {
+    animation: hero-unveil 1.2s var(--ease-out) 0.25s backwards;
+  }
+
+  .hero-image img {
+    animation: hero-settle 1.8s var(--ease-out) 0.25s backwards;
+  }
+
+  /* --- Reveal on scroll ------------------------------------------------- */
+  /* Covers first paint only. Once useScrollReveal() has posed every element
+     it sets data-reveal-ready and its animations take over from here. */
+  html:not([data-reveal-ready]) [data-reveal] {
+    opacity: 0;
+  }
+}
+
+/* --- Scroll-linked ------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      display: block;
+      animation: progress-grow linear both;
+      animation-timeline: scroll(root);
+    }
+
+    /* As the hero leaves, the text lifts away faster than the page and the
+       photo lags behind and recedes - a cheap but convincing depth cue. */
+    .hero {
+      view-timeline: --hero block;
+    }
+
+    .hero-content {
+      animation: hero-content-out linear both;
+      animation-timeline: --hero;
+      animation-range: exit;
+    }
+
+    .hero-image {
+      animation:
+        hero-unveil 1.2s var(--ease-out) 0.25s backwards,
+        hero-image-out linear both;
+      animation-timeline: auto, --hero;
+      animation-range: normal, exit;
+    }
+
+    /* The photo drifts inside its frame as it crosses the screen. The
+       timeline is named on the item because the item clips (overflow:
+       hidden), and a plain view() on the img would track that box instead
+       of the page. */
+    .gallery-item {
+      view-timeline: --gallery-item block;
+    }
+
+    .gallery-item img {
+      scale: 1.12;
+      animation: gallery-drift linear both;
+      animation-timeline: --gallery-item;
+    }
+  }
+}
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70%, 100% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+    filter: blur(6px);
+  }
+}
+
+/* clip-path can't interpolate to `none`, so the end state is spelled out. */
+@keyframes hero-unveil {
+  from { clip-path: inset(100% 0 0 0 round 24px); }
+  to { clip-path: inset(0 0 0 0 round 24px); }
+}
+
+@keyframes hero-settle {
+  from { scale: 1.18; }
+}
+
+@keyframes progress-grow {
+  to { scale: 1 1; }
+}
+
+@keyframes hero-content-out {
+  to {
+    opacity: 0;
+    translate: 0 -4rem;
+  }
+}
+
+@keyframes hero-image-out {
+  to {
+    opacity: 0.4;
+    translate: 0 2.5rem;
+    scale: 0.94;
+  }
+}
+
+@keyframes gallery-drift {
+  from { translate: 0 -5%; }
+  to { translate: 0 5%; }
 }
 
 /* ==========================================================================
@@ -972,8 +1617,12 @@ html[dir="rtl"] .mobile-nav a {
     gap: 2.5rem;
   }
 
-  .nav-links {
-    gap: 1.25rem;
+  .nav-links a {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .brand-name {
+    font-size: 1.4rem;
   }
 }
 
@@ -982,11 +1631,17 @@ html[dir="rtl"] .mobile-nav a {
   .hero {
     grid-template-columns: 1fr;
     min-height: auto;
-    gap: 2rem;
+    gap: 2.5rem;
     padding-top: 2.5rem;
   }
 
-  .hero-image {
+  .hero::before {
+    inset-block-start: auto;
+    inset-block-end: 0;
+    width: 90%;
+  }
+
+  .hero-visual {
     max-width: 560px;
     width: 100%;
     margin-inline: auto;
@@ -994,7 +1649,15 @@ html[dir="rtl"] .mobile-nav a {
 
   .contact-container {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
   }
 }
 
@@ -1018,7 +1681,6 @@ html[dir="rtl"] .mobile-nav a {
 
   .brand-name {
     font-size: 1.25rem;
-    letter-spacing: 0.5px;
   }
 
   /* Swap the inline links for the drawer. Without this the sections were
@@ -1045,12 +1707,16 @@ html[dir="rtl"] .mobile-nav a {
 
   .language-toggle {
     min-width: 0;
-    padding: 0.5rem 0.7rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
   }
 
   .hero {
-    padding: 2rem var(--gutter);
+    padding: 2rem var(--gutter) 3rem;
+  }
+
+  .hero-pill {
+    margin-bottom: 1.25rem;
   }
 
   .hero-buttons {
@@ -1071,8 +1737,13 @@ html[dir="rtl"] .mobile-nav a {
 
   .quick-info {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    padding: 2rem 1rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-card {
+    padding: 1.35rem 0.75rem;
   }
 
   .services,
@@ -1080,17 +1751,21 @@ html[dir="rtl"] .mobile-nav a {
   .testimonials,
   .contact,
   .social-media {
-    padding: 2.5rem var(--gutter);
-    margin-bottom: 2rem;
+    padding: 3rem var(--gutter);
+    margin-bottom: 0.5rem;
   }
 
   .section-header {
-    margin-bottom: 2rem;
+    margin-bottom: 2.25rem;
   }
 
   .service-card,
   .testimonial-card {
     padding: 1.5rem;
+  }
+
+  .services-grid {
+    gap: 1rem;
   }
 
   /* A full-width 1:1 tile made each gallery item a whole screen tall. */
@@ -1103,27 +1778,39 @@ html[dir="rtl"] .mobile-nav a {
   }
 
   .testimonials-scroll {
-    gap: 1.25rem;
-    max-height: 380px;
+    gap: 1rem;
+    max-height: 420px;
   }
 
   .contact-info {
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .social-links {
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .social-link {
     padding: 1.5rem 1rem;
-    flex: 1 1 calc(50% - 1rem);
+    flex: 1 1 calc(50% - 0.75rem);
     min-width: 130px;
   }
 
   .footer {
     margin-top: 2rem;
-    padding: 2rem 1rem calc(2rem + env(safe-area-inset-bottom));
+    padding-top: 3rem;
+  }
+
+  .footer-inner {
+    gap: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  /* Footer links double as tap targets on a phone. */
+  .footer-col a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 
@@ -1133,17 +1820,39 @@ html[dir="rtl"] .mobile-nav a {
     padding-top: 1.5rem;
   }
 
+  /* One column: the info cards turn into compact rows, icon beside text. */
   .quick-info {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+  }
+
+  .info-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    align-items: center;
+    text-align: start;
+    padding: 1rem 1.1rem;
+  }
+
+  .info-icon {
+    grid-row: span 2;
+    margin: 0;
+    width: 46px;
+    height: 46px;
   }
 
   .info-card h3 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
+    margin-bottom: 0;
   }
 
   .info-card p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .info-link {
+    justify-content: flex-start;
+    padding: 0;
   }
 
   .service-card h3 {
@@ -1152,11 +1861,10 @@ html[dir="rtl"] .mobile-nav a {
 
   .btn {
     padding: 0.85rem 1.25rem;
-    font-size: 1rem;
   }
 
   .contact-item {
-    padding: 1.15rem;
+    padding: 0.9rem 1rem;
   }
 
   .contact-item a,
@@ -1167,7 +1875,6 @@ html[dir="rtl"] .mobile-nav a {
 
   .social-links {
     flex-direction: column;
-    gap: 0.75rem;
   }
 
   .social-link {
@@ -1176,6 +1883,10 @@ html[dir="rtl"] .mobile-nav a {
     justify-content: center;
     gap: 0.75rem;
     padding: 1rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
   }
 }
 
