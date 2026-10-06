@@ -1519,23 +1519,28 @@ html[dir='rtl'] .scroll-progress {
     }
 
     /* As the hero leaves, the text lifts away faster than the page and the
-       photo lags behind and recedes - a cheap but convincing depth cue. */
-    .hero {
-      view-timeline: --hero block;
-    }
+       photo lags behind and recedes - a cheap but convincing depth cue.
+       Two-column layout only: on phones the hero is taller than the screen,
+       so the effect barely shows, and fading the whole text block from a
+       scroll timeline made it vanish shortly after load on real phones. */
+    @media (min-width: 901px) {
+      .hero {
+        view-timeline: --hero block;
+      }
 
-    .hero-content {
-      animation: hero-content-out linear both;
-      animation-timeline: --hero;
-      animation-range: exit;
-    }
+      .hero-content {
+        animation: hero-content-out linear both;
+        animation-timeline: --hero;
+        animation-range: exit;
+      }
 
-    .hero-image {
-      animation:
-        hero-unveil 1.2s var(--ease-out) 0.25s backwards,
-        hero-image-out linear both;
-      animation-timeline: auto, --hero;
-      animation-range: normal, exit;
+      .hero-image {
+        animation:
+          hero-unveil 1.2s var(--ease-out) 0.25s backwards,
+          hero-image-out linear both;
+        animation-timeline: auto, --hero;
+        animation-range: normal, exit;
+      }
     }
 
     /* The photo drifts inside its frame as it crosses the screen. The
@@ -1559,11 +1564,12 @@ html[dir='rtl'] .scroll-progress {
   70%, 100% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
 }
 
+/* No blur here: an animated filter is expensive on phones, and mobile Safari
+   can drop the element's layer when it finishes. */
 @keyframes hero-rise {
   from {
     opacity: 0;
     translate: 0 1.5rem;
-    filter: blur(6px);
   }
 }
 
