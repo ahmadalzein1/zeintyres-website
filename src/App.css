@@ -134,9 +134,24 @@ body.menu-open {
 }
 
 .app {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: clip;
+}
+
+/* A faint dot grid behind the whole page. It is fixed, so it stays put while
+   the content scrolls over it; isolation on .app keeps it above the body
+   background. Decoration only. */
+.app::before {
+  content: '';
+  position: fixed;
+  z-index: -2;
+  inset: 0;
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
 }
 
 /* Nothing should be able to spill sideways: long words, unbroken phone
@@ -447,8 +462,8 @@ html[dir="rtl"] .mobile-nav a {
   min-height: 80vh;
 }
 
-/* A soft brand glow behind the photo, and a faint dot grid that fades out
-   towards the edges. Both are decoration only. */
+/* A soft brand glow behind the photo. Decoration only; the dot grid behind
+   it comes from .app::before. */
 .hero::before {
   content: '';
   position: absolute;
@@ -459,18 +474,6 @@ html[dir="rtl"] .mobile-nav a {
   aspect-ratio: 1;
   background: radial-gradient(closest-side, var(--brand-glow), transparent);
   opacity: 0.45;
-  pointer-events: none;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
   pointer-events: none;
 }
 
