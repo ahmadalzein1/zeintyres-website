@@ -369,13 +369,16 @@ function useScrollReveal() {
 
     const root = document.documentElement
     const rootStyle = getComputedStyle(root)
-    const EASING = {
-      out: rootStyle.getPropertyValue('--ease-out').trim(),
-      spring: rootStyle.getPropertyValue('--ease-spring').trim(),
-      // Exits accelerate away but must start moving at once, or a quick
-      // reverse feels like it lagged.
-      in: 'cubic-bezier(0.4, 0, 1, 1)',
-    }
+    // Read when each animation starts, not once up front: on a first visit
+    // Safari runs this before App.css has arrived, the variables come back
+    // empty, and animate() throws on an empty easing - which left cards and
+    // icons stuck hidden until a reload.
+    const easing = (name) =>
+      name === 'in'
+        // Exits accelerate away but must start moving at once, or a quick
+        // reverse feels like it lagged.
+        ? 'cubic-bezier(0.4, 0, 1, 1)'
+        : rootStyle.getPropertyValue(`--ease-${name}`).trim() || 'ease-out'
 
     const targets = [...document.querySelectorAll('[data-reveal]')]
     const shown = new Map()
@@ -407,14 +410,14 @@ function useScrollReveal() {
       }
 
       run(el, hidden, visible
-        ? { duration: SHOW_MS, delay, easing: EASING.out }
-        : { duration: HIDE_MS, delay, easing: EASING.in })
+        ? { duration: SHOW_MS, delay, easing: easing('out') }
+        : { duration: HIDE_MS, delay, easing: easing('in') })
 
       for (const beat of REVEAL_BEATS) {
         el.querySelectorAll(beat.selector).forEach((node, i) => {
           run(node, beat.from, visible
-            ? { duration: beat.duration, delay: delay + beat.delay + i * (beat.step ?? 0), easing: EASING[beat.easing] }
-            : { duration: HIDE_MS * 0.6, delay, easing: EASING.in }, beat.pseudoElement)
+            ? { duration: beat.duration, delay: delay + beat.delay + i * (beat.step ?? 0), easing: easing(beat.easing) }
+            : { duration: HIDE_MS * 0.6, delay, easing: easing('in') }, beat.pseudoElement)
         })
       }
     }
