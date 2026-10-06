@@ -1514,6 +1514,14 @@ html[dir='rtl'] .scroll-progress {
   html:not([data-reveal-ready]) [data-reveal] {
     opacity: 0;
   }
+
+  /* Mobile Safari only gives an animated element its own layer while the
+     animation runs, and when it tears that layer down it can skip
+     repainting the SVG inside - the icon stays blank until a reload. A
+     permanent layer per icon means there is nothing to tear down. */
+  [data-reveal] svg {
+    will-change: transform;
+  }
 }
 
 /* --- Scroll-linked ------------------------------------------------------ */
