@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, Fragment } from 'react'
+import { flushSync } from 'react-dom'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import {
@@ -116,6 +117,19 @@ const translations = {
     weComeToYou: 'We Come to You',
     ourServices: 'Our Services',
     servicesDesc: 'Comprehensive tire and automotive solutions',
+    // [Bracketed] words are drawn in the brand colour.
+    statement: 'Tyres, rims and alignment [done right] — day or night, [every day of the year], right here in Amchit.',
+    statHours: 'hours a day',
+    statDays: 'days a week',
+    statServices: 'services under one roof',
+    storyEyebrow: 'How it works',
+    storyTitle: 'From flat tyre to back on the road',
+    storySteps: [
+      { title: 'Call or drive in', text: 'Ring us, send a WhatsApp or just pull in. We\'re open around the clock, and we come to you if you\'re stuck on the road.' },
+      { title: 'We check everything', text: 'We look at the tyre, the rim and the pressure, and tell you what your car actually needs.' },
+      { title: 'Repair or replace', text: 'Puncture repairs, new tyres, rim straightening or wheel alignment, done in our workshop.' },
+      { title: 'Back on the road', text: 'Fitted, tightened and pressure-checked, so you drive away safe.' },
+    ],
     tireSales: 'Tire Sales',
     tireSalesDesc: 'Wide selection of premium tires for all vehicle types and budgets.',
     tireRepairs: 'Tire Repairs',
@@ -185,6 +199,18 @@ const translations = {
     weComeToYou: 'نأتي إليك أينما كنت',
     ourServices: 'خدماتنا',
     servicesDesc: 'حلول شاملة للإطارات والسيارات',
+    statement: 'إطارات وجنوط وضبط عجلات [بإتقان] — ليلاً أو نهاراً، [كل أيام السنة]، هنا في عمشيت.',
+    statHours: 'ساعة في اليوم',
+    statDays: 'أيام في الأسبوع',
+    statServices: 'خدمات تحت سقف واحد',
+    storyEyebrow: 'كيف نعمل',
+    storyTitle: 'من الإطار المثقوب إلى الطريق من جديد',
+    storySteps: [
+      { title: 'اتصل أو تعال إلينا', text: 'اتصل بنا أو راسلنا على واتس أب أو تعال مباشرة. نحن مفتوحون على مدار الساعة، ونأتي إليك إذا تعطّلت على الطريق.' },
+      { title: 'نفحص كل شيء', text: 'نفحص الإطار والجنط والضغط، ونقول لك ما تحتاجه سيارتك فعلاً.' },
+      { title: 'إصلاح أو تبديل', text: 'إصلاح الثقوب، إطارات جديدة، تعديل الجنوط أو ضبط العجلات، في ورشتنا.' },
+      { title: 'انطلق بأمان', text: 'نركّب ونشدّ ونتأكد من الضغط، لتعود إلى الطريق بأمان.' },
+    ],
     tireSales: 'بيع الإطارات',
     tireSalesDesc: 'تشكيلة واسعة من الإطارات عالية الجودة لجميع أنواع السيارات والميزانيات.',
     tireRepairs: 'إصلاح الإطارات',
@@ -479,7 +505,232 @@ function useScrollReveal() {
   }, [])
 }
 
-const SECTION_IDS = ['services', 'gallery', 'testimonials', 'contact', 'social']
+// How it works has no nav link, but listing it stops Services staying
+// highlighted while you scroll through it.
+const SECTION_IDS = ['services', 'how-it-works', 'gallery', 'testimonials', 'contact', 'social']
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+// Runs a state change inside a View Transition, so the page morphs into its
+// new state instead of snapping. `kind` sits on <html> as data-vt while it
+// runs, for App.css to style that kind of transition. Browsers without the
+// API, and reduced motion, just get the change.
+let currentTransition = null
+
+function withViewTransition(kind, update, onReady) {
+  if (!document.startViewTransition || prefersReducedMotion()) {
+    update()
+    return
+  }
+  const root = document.documentElement
+  root.dataset.vt = kind
+  // flushSync so the new state - including the layout effects that set the
+  // theme and direction on <html> - is in the DOM before the snapshot.
+  const transition = document.startViewTransition(() => flushSync(update))
+  currentTransition = transition
+  if (onReady) transition.ready.then(onReady).catch(() => {})
+  transition.finished.finally(() => {
+    // A quick second click starts a new transition; leave its kind alone.
+    if (currentTransition === transition) delete root.dataset.vt
+  })
+}
+
+// "Plain [accent] words" -> one entry per word, each a list of parts, for
+// the scroll-lit statement. A word can straddle a bracket ("year],").
+const toWords = (text) => {
+  let accent = false
+  return text.split(/\s+/).filter(Boolean).map((token) =>
+    token.split(/([[\]])/).flatMap((piece) => {
+      if (piece === '[') accent = true
+      else if (piece === ']') accent = false
+      else if (piece) return [{ text: piece, accent }]
+      return []
+    })
+  )
+}
+
+// A headline whose words light up one after another as it scrolls through
+// the screen. Each word gets its own slice of the scroll range here; the
+// animation itself is in App.css. Unsupported browsers show it fully lit.
+const LIT_FROM = 5  // % of the cover range where the first word starts
+const LIT_SPAN = 35 // % of the cover range the whole sentence takes
+const LIT_WORD = 8  // % of the cover range one word takes to light
+
+function ScrollLitText({ text, className }) {
+  const words = toWords(text)
+  return (
+    <p className={className}>
+      {words.map((parts, i) => {
+        const start = LIT_FROM + (i / words.length) * LIT_SPAN
+        return (
+          <Fragment key={i}>
+            {i > 0 && ' '}
+            <span className="lit-word" style={{ animationRange: `cover ${start}% cover ${start + LIT_WORD}%` }}>
+              {parts.map((part, j) =>
+                part.accent ? <span className="lit-accent" key={j}>{part.text}</span> : part.text
+              )}
+            </span>
+          </Fragment>
+        )
+      })}
+    </p>
+  )
+}
+
+// Counts up from 0 the first time it scrolls into view. Screen readers get
+// the real number straight away; the ticking copy is decoration.
+function CountUp({ to, duration = 1600 }) {
+  const ref = useRef(null)
+  const [value, setValue] = useState(() => (prefersReducedMotion() ? to : 0))
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return
+    let frame = 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        observer.disconnect()
+        const start = performance.now()
+        const tick = (now) => {
+          const p = Math.min((now - start) / duration, 1)
+          // Expo-out, to match --ease-out: races up, then settles.
+          setValue(p === 1 ? to : Math.round(to * (1 - 2 ** (-10 * p))))
+          if (p < 1) frame = requestAnimationFrame(tick)
+        }
+        frame = requestAnimationFrame(tick)
+      },
+      { threshold: 0.6 }
+    )
+    observer.observe(ref.current)
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [to, duration])
+
+  return (
+    <span className="stat-value" ref={ref}>
+      <span aria-hidden="true">{value}</span>
+      <span className="visually-hidden">{to}</span>
+    </span>
+  )
+}
+
+// The wheel in How it works: a 3D wheel rendered ahead of time into a
+// sequence of frames (public/wheel/, made by scripts/wheel-frames/), flipped
+// through on a canvas as you scroll - the way product pages show an object
+// turning. Being i/(count-1) of the way through the pinned track shows frame
+// i, in step with the CSS that plays the steps. Unpinned (reduced motion,
+// short screens, no scroll timelines) it just shows the poster frame.
+const WHEEL_FRAMES = { count: 96, width: 800, height: 667, poster: 90 }
+const wheelFrameUrl = (i) => `${import.meta.env.BASE_URL}wheel/${String(i).padStart(3, '0')}.webp`
+
+function WheelFrames() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const { count, poster } = WHEEL_FRAMES
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    const track = canvas.closest('.story-track')
+    const stage = track.firstElementChild
+    const frames = []
+    let shown = -1
+    let raf = 0
+    let cancelled = false
+
+    const wanted = () => {
+      const style = getComputedStyle(stage)
+      if (style.position !== 'sticky') return poster
+      // Same range as the CSS steps: from the stage sticking under the
+      // navbar to the track's end reaching the bottom of the screen.
+      const nav = parseFloat(style.top) || 0
+      const { top, height } = track.getBoundingClientRect()
+      const p = (nav - top) / (height - (window.innerHeight - nav))
+      return Math.round(Math.min(1, Math.max(0, p)) * (count - 1))
+    }
+
+    const draw = () => {
+      raf = 0
+      const want = wanted()
+      // Until every frame is in, show the nearest one that is, so a fast
+      // scroll still finds the wheel roughly where it should be.
+      let best = -1
+      for (let d = 0; d < count && best < 0; d++) {
+        if (frames[want - d]) best = want - d
+        else if (frames[want + d]) best = want + d
+      }
+      if (best < 0 || best === shown) return
+      shown = best
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(frames[best], 0, 0, canvas.width, canvas.height)
+    }
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(draw)
+    }
+
+    const load = (i) => {
+      const img = new Image()
+      img.src = wheelFrameUrl(i)
+      return img.decode().then(
+        () => {
+          if (cancelled) return
+          frames[i] = img
+          schedule()
+        },
+        () => {} // a missing frame just leaves a gap the neighbours cover
+      )
+    }
+
+    // Poster first, then coarse to fine - every 8th frame, every 4th, ... -
+    // so the motion reads early and sharpens as the rest arrive. A few at a
+    // time, so the frames never crowd out the rest of the page.
+    const loadAll = async () => {
+      const order = [poster]
+      if (!prefersReducedMotion()) {
+        for (const stride of [8, 4, 2, 1]) {
+          for (let i = 0; i < count; i += stride) if (!order.includes(i)) order.push(i)
+        }
+      }
+      await load(order.shift())
+      const worker = async () => {
+        while (order.length && !cancelled) await load(order.shift())
+      }
+      await Promise.all(Array.from({ length: 4 }, worker))
+    }
+
+    // Nothing is fetched until the section is within a screen or so.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        observer.disconnect()
+        loadAll()
+      },
+      { rootMargin: '150% 0px' }
+    )
+    observer.observe(track)
+
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      cancelled = true
+      observer.disconnect()
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="wheel-frames"
+      width={WHEEL_FRAMES.width}
+      height={WHEEL_FRAMES.height}
+      aria-hidden="true"
+    />
+  )
+}
 
 // "Milena Najeeb" -> "MN", for the reviewer avatars.
 const initials = (name) =>
@@ -505,15 +756,26 @@ function App() {
   useSmoothScroll(menuOpen)
   useSpotlight()
 
-  const toggleTheme = () => {
+  // The new theme spreads out in a circle from the button that was pressed.
+  const toggleTheme = (e) => {
     writePref('zt-theme', darkMode ? 'light' : 'dark')
-    setDarkMode(!darkMode)
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
+    const x = left + width / 2
+    const y = top + height / 2
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+    withViewTransition('theme', () => setDarkMode(!darkMode), () => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration: 700, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', pseudoElement: '::view-transition-new(root)' }
+      )
+    })
   }
 
+  // Switching language mirrors the whole layout; a cross-fade hides the jump.
   const toggleLanguage = () => {
     const next = language === 'en' ? 'ar' : 'en'
     writePref('zt-lang', next)
-    setLanguage(next)
+    withViewTransition('lang', () => setLanguage(next))
   }
 
   const navItems = [
@@ -553,7 +815,9 @@ function App() {
     }
   }, [menuOpen])
 
-  useEffect(() => {
+  // Layout effects, so a View Transition's flushSync applies these to <html>
+  // before the browser snapshots the new state.
+  useLayoutEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark')
     } else {
@@ -561,7 +825,7 @@ function App() {
     }
   }, [darkMode])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (language === 'ar') {
       document.documentElement.setAttribute('dir', 'rtl')
       document.documentElement.lang = 'ar'
@@ -707,28 +971,80 @@ function App() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="services">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.servicesEyebrow}</span>
-          <h2>{t.ourServices}</h2>
-          <p>{t.servicesDesc}</p>
+      {/* Statement - lights up word by word as it scrolls past */}
+      <section className="statement">
+        <ScrollLitText text={t.statement} className="statement-text" />
+        <div className="stats">
+          <div className="stat" data-reveal>
+            <CountUp to={24} />
+            <span className="stat-label">{t.statHours}</span>
+          </div>
+          <div className="stat" data-reveal>
+            <CountUp to={7} />
+            <span className="stat-label">{t.statDays}</span>
+          </div>
+          <div className="stat" data-reveal>
+            <CountUp to={6} />
+            <span className="stat-label">{t.statServices}</span>
+          </div>
         </div>
-        <div className="services-grid">
-          {[
-            [Tag, t.tireSales, t.tireSalesDesc],
-            [Hammer, t.tireRepairs, t.tireRepairsDesc],
-            [Gauge, t.maintenance, t.maintenanceDesc],
-            [Crosshair, t.wheelAlignment, t.wheelAlignmentDesc],
-            [Disc, t.rimSales, t.rimSalesDesc],
-            [Cog, t.rimRepairs, t.rimRepairsDesc],
-          ].map(([Icon, title, desc]) => (
-            <div className="service-card" data-reveal data-spotlight key={title}>
-              <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+      </section>
+
+      {/* Services Section - the track is the scroll distance the row of cards
+          slides sideways over while the stage stays pinned */}
+      <section id="services" className="services">
+        <div className="services-track">
+          <div className="services-stage">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.servicesEyebrow}</span>
+              <h2>{t.ourServices}</h2>
+              <p>{t.servicesDesc}</p>
             </div>
-          ))}
+            <div className="services-grid">
+              {[
+                [Tag, t.tireSales, t.tireSalesDesc],
+                [Hammer, t.tireRepairs, t.tireRepairsDesc],
+                [Gauge, t.maintenance, t.maintenanceDesc],
+                [Crosshair, t.wheelAlignment, t.wheelAlignmentDesc],
+                [Disc, t.rimSales, t.rimSalesDesc],
+                [Cog, t.rimRepairs, t.rimRepairsDesc],
+              ].map(([Icon, title, desc]) => (
+                <div className="service-card" data-reveal data-spotlight key={title}>
+                  <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works - the stage stays pinned while the track scrolls past,
+          and the steps and the wheel play through as it does */}
+      <section id="how-it-works" className="story">
+        <div className="story-track">
+          <div className="story-stage">
+            <div className="section-header story-header" data-reveal>
+              <span className="eyebrow">{t.storyEyebrow}</span>
+              <h2>{t.storyTitle}</h2>
+            </div>
+            <div className="story-visual">
+              <WheelFrames />
+            </div>
+            <ol className="story-steps">
+              {t.storySteps.map((step, i) => (
+                <li className="story-step" key={i}>
+                  <span className="story-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="story-progress" aria-hidden="true">
+              {t.storySteps.map((step) => <span key={step.title} />)}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -740,7 +1056,7 @@ function App() {
           <p>{t.shopDesc}</p>
         </div>
         <div className="gallery-grid">
-          <div className="gallery-item" data-reveal="zoom">
+          <div className="gallery-item">
             <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
             <p>{t.professionalSetup}</p>
           </div>

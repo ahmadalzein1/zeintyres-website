@@ -779,6 +779,73 @@ html[dir='rtl'] .btn-arrow {
 }
 
 /* ==========================================================================
+   Statement + stats
+   ========================================================================== */
+.statement {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem var(--gutter) 3rem;
+}
+
+/* Each word is a .lit-word span; they light up on scroll under Motion. */
+.statement-text {
+  max-width: 22ch;
+  font-size: clamp(2rem, 5.4vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  color: var(--heading-color);
+}
+
+.lit-accent {
+  color: var(--secondary-color);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 3.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.75rem 1.5rem 0 0;
+}
+
+.stat + .stat {
+  padding-inline-start: 1.5rem;
+  border-inline-start: 1px solid var(--border-color);
+}
+
+/* Tabular figures keep the number from jittering sideways as it counts. */
+.stat-value {
+  font-size: clamp(2.75rem, 7vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--secondary-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  color: var(--muted-color);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
    Sections
    ========================================================================== */
 .services,
@@ -920,6 +987,129 @@ html[dir='rtl'] .eyebrow::before {
     background-color: var(--secondary-color);
     color: #fff;
   }
+}
+
+/* How it works */
+/* Unpinned (the fallback), this is a plain list of steps beside the wheel.
+   The pinned version, under Motion, stacks the steps and plays through them. */
+.story {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 4.5rem var(--gutter);
+}
+
+.story-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'header visual'
+    'steps visual'
+    'progress visual';
+  align-content: center;
+  align-items: center;
+  column-gap: 4rem;
+}
+
+.story .story-header {
+  grid-area: header;
+  max-width: none;
+  margin: 0 0 2.5rem;
+  text-align: start;
+}
+
+.story-visual {
+  grid-area: visual;
+}
+
+.story-steps {
+  grid-area: steps;
+  list-style: none;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.story-step {
+  display: grid;
+  gap: 0.4rem;
+  padding-inline-start: 1.25rem;
+  border-inline-start: 2px solid var(--brand-tint-strong);
+}
+
+.story-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--secondary-color);
+}
+
+.story-step h3 {
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--heading-color);
+}
+
+.story-step p {
+  max-width: 38ch;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--muted-color);
+}
+
+/* One bar per step; only shown when pinned. */
+.story-progress {
+  grid-area: progress;
+  display: none;
+  gap: 0.5rem;
+  margin-top: 2.25rem;
+}
+
+.story-progress span {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--border-strong);
+}
+
+.story-progress span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--secondary-color);
+  transform-origin: left;
+  scale: 0 1;
+}
+
+html[dir='rtl'] .story-progress span::after {
+  transform-origin: right;
+}
+
+/* The frame-by-frame wheel (see WheelFrames in App.jsx). The frames are
+   transparent, so the page shows through; on the dark theme a faint light
+   behind it keeps a black tyre from sinking into a black page. */
+.story-visual {
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-theme='dark'] .story-visual::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 5% 10%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.09), transparent);
+  pointer-events: none;
+}
+
+.wheel-frames {
+  display: block;
+  width: min(100%, 560px);
+  height: auto;
+  aspect-ratio: 800 / 667;
+  margin-inline: auto;
 }
 
 /* Gallery Section */
@@ -1452,9 +1642,12 @@ html[dir='rtl'] .eyebrow::before {
       App.jsx, which plays it in on the way down and back out on the way up.
       Both animate the individual translate / scale / rotate properties so
       they never fight the hover effects, which use transform.
-   2. Scroll-linked - progress bar, hero exit and gallery parallax are tied
-      directly to scroll position with CSS scroll timelines. Browsers
-      without them simply skip this layer.
+   2. Scroll-linked - progress bar, hero exit, gallery parallax and curtain,
+      the word-by-word statement and the two pinned sections (services
+      sliding sideways, How it works) are tied directly to scroll position
+      with CSS scroll timelines. Browsers without them simply skip this
+      layer and get the plain layout.
+   Theme and language switches also morph via View Transitions, at the end.
    ========================================================================== */
 
 /* Lives on the bottom edge of the navbar; only shown where scroll timelines
@@ -1563,7 +1756,174 @@ html[dir='rtl'] .scroll-progress {
       animation: gallery-drift linear both;
       animation-timeline: --gallery-item;
     }
+
+    /* ...and opens from the middle like a curtain on the way in. Fill is
+       backwards only: once open the clip comes off, or it would cut away the
+       card's shadow. The caption follows it up. */
+    .gallery-item {
+      animation: gallery-curtain linear backwards;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+
+    .gallery-item p {
+      animation: caption-rise linear both;
+      animation-timeline: --gallery-item;
+      animation-range: entry 60% cover 50%;
+    }
+
+    /* Each word gets its own slice of the range inline (ScrollLitText). */
+    .statement-text {
+      view-timeline: --statement block;
+    }
+
+    .lit-word {
+      animation: word-light linear both;
+      animation-timeline: --statement;
+    }
   }
+
+  /* --- Pinned sections ------------------------------------------------- */
+  /* Both use the same pattern: a tall track scrolls normally, a stage inside
+     it sticks under the navbar, and the stage's content is driven by how far
+     through the track you are. The inset makes the timeline start where the
+     stage sticks rather than at the top of the screen. Short screens
+     (landscape phones) don't have the room, and keep the plain layout. */
+  @media (prefers-reduced-motion: no-preference) and (min-height: 520px) {
+    /* The stage centres its content in a full screen, which is already
+       plenty of breathing room; the section padding on top read as a gap.
+       (section. to outrank the phone padding further down.) */
+    section.services,
+    section.story {
+      padding-block: 0;
+      margin-bottom: 0;
+    }
+
+    .services-track,
+    .story-track {
+      view-timeline-inset: var(--nav-h) 0;
+    }
+
+    .services-stage,
+    .story-stage {
+      position: sticky;
+      top: var(--nav-h);
+      height: calc(100svh - var(--nav-h));
+    }
+
+    /* Services: the cards become one row that slides sideways. The row's
+       full travel is its own width less the stage's, hence the container. */
+    .services-track {
+      height: 300svh;
+      view-timeline-name: --services;
+    }
+
+    .services-stage {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      container-type: inline-size;
+    }
+
+    .services-stage .section-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .services-grid {
+      display: flex;
+      width: max-content;
+      animation: services-slide linear both;
+      animation-timeline: --services;
+      animation-range: contain 8% contain 92%;
+    }
+
+    html[dir='rtl'] .services-grid {
+      animation-name: services-slide-rtl;
+    }
+
+    .service-card {
+      flex: none;
+      width: min(340px, 80cqi);
+    }
+
+    /* How it works: one screen of scrolling per step. */
+    .story-track {
+      height: calc((100svh - var(--nav-h)) * 4);
+      view-timeline-name: --story;
+    }
+
+    .story-steps {
+      gap: 0;
+    }
+
+    .story-step {
+      grid-area: 1 / 1;
+      animation: story-step linear both;
+      animation-timeline: --story;
+    }
+
+    /* Four steps, a quarter of the track each. The first starts shown and
+       the last stays shown; keep these in step with storySteps. */
+    .story-step:nth-child(1) { animation-name: story-step-first; animation-range: contain 0% contain 25%; }
+    .story-step:nth-child(2) { animation-range: contain 25% contain 50%; }
+    .story-step:nth-child(3) { animation-range: contain 50% contain 75%; }
+    .story-step:nth-child(4) { animation-name: story-step-last; animation-range: contain 75% contain 100%; }
+
+    .story-progress {
+      display: flex;
+    }
+
+    .story-progress span::after {
+      animation: progress-grow linear both;
+      animation-timeline: --story;
+    }
+
+    .story-progress span:nth-child(1)::after { animation-range: contain 0% contain 25%; }
+    .story-progress span:nth-child(2)::after { animation-range: contain 25% contain 50%; }
+    .story-progress span:nth-child(3)::after { animation-range: contain 50% contain 75%; }
+    .story-progress span:nth-child(4)::after { animation-range: contain 75% contain 100%; }
+
+    /* The pinned stage is exactly one screen, so the wheel is sized by
+       height too - title, wheel and step all have to fit. Its frames are
+       picked by WheelFrames in App.jsx over the same range as the steps. */
+    .wheel-frames {
+      width: min(100%, 560px, 80svh);
+    }
+
+    @media (max-width: 900px) {
+      .wheel-frames {
+        width: min(100%, 40svh);
+      }
+
+      .story-stage .story-visual {
+        margin-bottom: 1.25rem;
+      }
+    }
+  }
+}
+
+/* --- View transitions --------------------------------------------------- */
+/* withViewTransition() in App.jsx tags <html> with data-vt while one runs.
+   The page's own colour transitions would play inside the new snapshot and
+   muddy it, so they're off for the duration. */
+:root[data-vt],
+:root[data-vt] *,
+:root[data-vt] *::before,
+:root[data-vt] *::after {
+  transition: none !important;
+}
+
+/* Theme: the new page is revealed by a growing circle (animated from JS, as
+   it starts at the button), over the old one rather than cross-faded. */
+:root[data-vt='theme']::view-transition-old(root),
+:root[data-vt='theme']::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-vt='lang']::view-transition-old(root),
+:root[data-vt='lang']::view-transition-new(root) {
+  animation-duration: 0.4s;
 }
 
 @keyframes live-pulse {
@@ -1612,6 +1972,70 @@ html[dir='rtl'] .scroll-progress {
 @keyframes gallery-drift {
   from { translate: 0 -5%; }
   to { translate: 0 5%; }
+}
+
+@keyframes gallery-curtain {
+  from { clip-path: inset(0 50% 0 50% round 24px); }
+  to { clip-path: inset(0 0 0 0 round 24px); }
+}
+
+@keyframes caption-rise {
+  from {
+    opacity: 0;
+    translate: 0 100%;
+  }
+}
+
+/* Unlit words are faint rather than gone, so the sentence reads as one. */
+@keyframes word-light {
+  from { opacity: 0.16; }
+}
+
+/* 100% is the row's own width, 100cqi the stage's: the row travels until
+   its far end meets the stage's edge. */
+@keyframes services-slide {
+  to { translate: calc(-100% + 100cqi) 0; }
+}
+
+@keyframes services-slide-rtl {
+  to { translate: calc(100% - 100cqi) 0; }
+}
+
+@keyframes story-step {
+  0% {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+  20%, 80% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 -1.5rem;
+  }
+}
+
+@keyframes story-step-first {
+  0%, 80% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 -1.5rem;
+  }
+}
+
+@keyframes story-step-last {
+  0% {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+  20%, 100% {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 /* ==========================================================================
@@ -1663,6 +2087,24 @@ html[dir='rtl'] .scroll-progress {
   .contact-container {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  /* Wheel between the title and the steps, the way it reads on a phone. */
+  .story-stage {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header'
+      'visual'
+      'steps'
+      'progress';
+  }
+
+  .story .story-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .story-visual {
+    margin-bottom: 2rem;
   }
 
   .footer-inner {
@@ -1760,12 +2202,37 @@ html[dir='rtl'] .scroll-progress {
   }
 
   .services,
+  .story,
   .gallery,
   .testimonials,
   .contact,
   .social-media {
     padding: 3rem var(--gutter);
     margin-bottom: 0.5rem;
+  }
+
+  .statement {
+    padding: 3.5rem var(--gutter) 2rem;
+  }
+
+  .stats {
+    margin-top: 2.5rem;
+  }
+
+  .stat {
+    padding: 1.25rem 0.75rem 0 0;
+  }
+
+  .stat + .stat {
+    padding-inline-start: 0.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .story-step p {
+    font-size: 1rem;
   }
 
   .section-header {
