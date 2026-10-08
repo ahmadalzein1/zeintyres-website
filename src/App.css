@@ -937,6 +937,12 @@ html[dir='rtl'] .eyebrow::before {
   gap: 1.25rem;
 }
 
+/* Carries the deal animation (under Motion); a grid so the card still fills
+   the row's height. */
+.service-deal {
+  display: grid;
+}
+
 .service-card {
   background-color: var(--surface);
   padding: 2rem;
@@ -1644,7 +1650,7 @@ html[dir='rtl'] .story-progress span::after {
       they never fight the hover effects, which use transform.
    2. Scroll-linked - progress bar, hero exit, gallery parallax and curtain,
       the word-by-word statement and the two pinned sections (services
-      sliding sideways, How it works) are tied directly to scroll position
+      dealt from a pile, How it works) are tied directly to scroll position
       with CSS scroll timelines. Browsers without them simply skip this
       layer and get the plain layout.
    Theme and language switches also morph via View Transitions, at the end.
@@ -1787,63 +1793,132 @@ html[dir='rtl'] .scroll-progress {
   /* Both use the same pattern: a tall track scrolls normally, a stage inside
      it sticks under the navbar, and the stage's content is driven by how far
      through the track you are. The inset makes the timeline start where the
-     stage sticks rather than at the top of the screen. Short screens
-     (landscape phones) don't have the room, and keep the plain layout. */
+     stage sticks rather than at the top of the screen. Screens without the
+     room keep the plain layout. */
+
+  /* Services: the six cards arrive as one messy pile in the middle of the
+     grid and are dealt out to their places, top card first, as you scroll.
+     The whole 3x2 grid has to fit on one screen, so this needs a wide and
+     reasonably tall window; anything smaller gets the toss-in below. */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 901px) and (min-height: 650px) {
+    section.services {
+      padding-block: 0;
+      margin-bottom: 0;
+    }
+
+    .services-track {
+      height: 240svh;
+      view-timeline: --services block;
+      view-timeline-inset: var(--nav-h) 0;
+    }
+
+    .services-stage {
+      position: sticky;
+      top: var(--nav-h);
+      height: calc(100svh - var(--nav-h));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .services-stage .section-header {
+      margin-bottom: 2rem;
+    }
+
+    /* --gap is read by the deal to work out where the pile is. */
+    .services-grid {
+      --gap: 1rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+    }
+
+    /* A little tighter than the plain cards, so two rows and the title fit
+       on a laptop screen. */
+    .service-card {
+      padding: 1.4rem 1.5rem;
+    }
+
+    .service-icon {
+      width: 46px;
+      height: 46px;
+      margin-bottom: 0.85rem;
+    }
+
+    .service-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .service-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .service-card p {
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    /* Each card starts --dx columns and --dy rows away from its own slot,
+       which puts all six over the middle of the grid, at its own --tilt.
+       Earlier cards sit higher in the pile and are dealt first, in
+       overlapping slices of the track. */
+    .service-deal {
+      --dir: 1;
+      animation: service-deal cubic-bezier(0.33, 1, 0.68, 1) both;
+      animation-timeline: --services;
+    }
+
+    html[dir='rtl'] .service-deal {
+      --dir: -1;
+    }
+
+    .service-deal:nth-child(1) { --dx: 1;  --dy: 0.5;  --tilt: -3deg; z-index: 6; animation-range: contain 4% contain 38%; }
+    .service-deal:nth-child(2) { --dx: 0;  --dy: 0.5;  --tilt: 5deg;  z-index: 5; animation-range: contain 14% contain 48%; }
+    .service-deal:nth-child(3) { --dx: -1; --dy: 0.5;  --tilt: -7deg; z-index: 4; animation-range: contain 24% contain 58%; }
+    .service-deal:nth-child(4) { --dx: 1;  --dy: -0.5; --tilt: 8deg;  z-index: 3; animation-range: contain 34% contain 68%; }
+    .service-deal:nth-child(5) { --dx: 0;  --dy: -0.5; --tilt: -5deg; z-index: 2; animation-range: contain 44% contain 78%; }
+    .service-deal:nth-child(6) { --dx: -1; --dy: -0.5; --tilt: 3deg;  z-index: 1; animation-range: contain 54% contain 88%; }
+  }
+
+  /* Smaller screens scroll the plain grid, and each card is tossed in from
+     alternate sides with a slight spin as it comes onto the screen. */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 900px),
+    (prefers-reduced-motion: no-preference) and (max-height: 649px) {
+    .service-deal {
+      --dir: 1;
+      --side: -1;
+      animation: service-toss cubic-bezier(0.33, 1, 0.68, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+
+    .service-deal:nth-child(even) {
+      --side: 1;
+    }
+
+    html[dir='rtl'] .service-deal {
+      --dir: -1;
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) and (min-height: 520px) {
     /* The stage centres its content in a full screen, which is already
        plenty of breathing room; the section padding on top read as a gap.
        (section. to outrank the phone padding further down.) */
-    section.services,
     section.story {
       padding-block: 0;
       margin-bottom: 0;
     }
 
-    .services-track,
     .story-track {
       view-timeline-inset: var(--nav-h) 0;
     }
 
-    .services-stage,
     .story-stage {
       position: sticky;
       top: var(--nav-h);
       height: calc(100svh - var(--nav-h));
-    }
-
-    /* Services: the cards become one row that slides sideways. The row's
-       full travel is its own width less the stage's, hence the container. */
-    .services-track {
-      height: 300svh;
-      view-timeline-name: --services;
-    }
-
-    .services-stage {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      container-type: inline-size;
-    }
-
-    .services-stage .section-header {
-      margin-bottom: 2.5rem;
-    }
-
-    .services-grid {
-      display: flex;
-      width: max-content;
-      animation: services-slide linear both;
-      animation-timeline: --services;
-      animation-range: contain 8% contain 92%;
-    }
-
-    html[dir='rtl'] .services-grid {
-      animation-name: services-slide-rtl;
-    }
-
-    .service-card {
-      flex: none;
-      width: min(340px, 80cqi);
     }
 
     /* How it works: one screen of scrolling per step. */
@@ -1991,14 +2066,32 @@ html[dir='rtl'] .scroll-progress {
   from { opacity: 0.16; }
 }
 
-/* 100% is the row's own width, 100cqi the stage's: the row travels until
-   its far end meets the stage's edge. */
-@keyframes services-slide {
-  to { translate: calc(-100% + 100cqi) 0; }
+/* 100% is the card's own size, so one step of (100% + gap) is one slot over.
+   It swings a touch past level as it lands, then settles. */
+@keyframes service-deal {
+  from {
+    translate:
+      calc(var(--dx) * var(--dir) * (100% + var(--gap)))
+      calc(var(--dy) * (100% + var(--gap)));
+    rotate: var(--tilt);
+    scale: 0.92;
+  }
+  70% {
+    rotate: calc(var(--tilt) * -0.25);
+    scale: 1.03;
+  }
+  to {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
 }
 
-@keyframes services-slide-rtl {
-  to { translate: calc(100% - 100cqi) 0; }
+@keyframes service-toss {
+  from {
+    translate: calc(var(--side) * var(--dir) * 3rem) 2.5rem;
+    rotate: calc(var(--side) * var(--dir) * 7deg);
+  }
 }
 
 @keyframes story-step {

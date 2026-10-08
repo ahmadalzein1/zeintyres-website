@@ -990,8 +990,10 @@ function App() {
         </div>
       </section>
 
-      {/* Services Section - the track is the scroll distance the row of cards
-          slides sideways over while the stage stays pinned */}
+      {/* Services Section - the track is the scroll distance over which the
+          cards are dealt from one pile into the grid while the stage stays
+          pinned. The deal moves each .service-deal wrapper, so it never
+          fights the card's own reveal. */}
       <section id="services" className="services">
         <div className="services-track">
           <div className="services-stage">
@@ -1009,10 +1011,12 @@ function App() {
                 [Disc, t.rimSales, t.rimSalesDesc],
                 [Cog, t.rimRepairs, t.rimRepairsDesc],
               ].map(([Icon, title, desc]) => (
-                <div className="service-card" data-reveal data-spotlight key={title}>
-                  <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
-                  <h3>{title}</h3>
-                  <p>{desc}</p>
+                <div className="service-deal" key={title}>
+                  <div className="service-card" data-reveal data-spotlight>
+                    <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+                    <h3>{title}</h3>
+                    <p>{desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
