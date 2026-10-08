@@ -1699,6 +1699,12 @@ html[dir='rtl'] .scroll-progress {
   .hero-content > :nth-child(6) { animation-delay: 0.52s; }
   .hero-content > :nth-child(7) { animation-delay: 0.64s; }
 
+  /* The call-to-action buttons skip the stagger so they're tappable on first
+     paint instead of fading in last. */
+  .hero-content > .hero-buttons {
+    animation: none;
+  }
+
   .hero-image {
     animation: hero-unveil 1.2s var(--ease-out) 0.25s backwards;
   }
