@@ -482,7 +482,10 @@ function useScrollReveal() {
     update()
     // From here the animations own visibility; drop the CSS pre-hide.
     root.setAttribute('data-reveal-ready', '')
-    window.addEventListener('scroll', schedule, { passive: true })
+    // Capture, so scrolling inside a box (the reviews list) counts too - its
+    // scroll events don't bubble up to window, and a card scrolled into view
+    // there would otherwise stay hidden until the page itself moved.
+    window.addEventListener('scroll', schedule, { capture: true, passive: true })
     window.addEventListener('resize', schedule)
 
     // Switching language flips the text direction; anything still waiting
@@ -497,7 +500,7 @@ function useScrollReveal() {
     return () => {
       dirWatch.disconnect()
       cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('scroll', schedule, { capture: true })
       window.removeEventListener('resize', schedule)
       root.removeAttribute('data-reveal-ready')
       running.forEach((slots) => Object.values(slots).forEach((anim) => anim.cancel()))
