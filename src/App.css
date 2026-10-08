@@ -265,6 +265,8 @@ html[dir="rtl"] .section-header {
   align-items: center;
   gap: 0.85rem;
   min-width: 0;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .logo {

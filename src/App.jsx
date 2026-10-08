@@ -848,10 +848,11 @@ function App() {
       {/* Header/Navigation */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
         <div className="navbar-container">
-          <div className="logo-section">
+          {/* No element has id="top", so Lenis glides to the very top. */}
+          <a href="#top" className="logo-section" onClick={() => setMenuOpen(false)}>
             <img src={darkMode ? logoDark : logoLight} alt="Zein Tyres Logo" className="logo" />
             <h1 className="brand-name">Zein Tyres</h1>
-          </div>
+          </a>
           <nav className="nav-links">
             {navItems.map(({ href, label }) => (
               <a
