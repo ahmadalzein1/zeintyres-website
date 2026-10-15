@@ -849,11 +849,23 @@ html[dir='rtl'] .btn-arrow {
 /* ==========================================================================
    About page (about/index.html)
    ========================================================================== */
-/* A dark panel in both themes, like the footer, so the page reads as its own
-   place from the first screen. It is inset below the navbar rather than
-   running under it, which keeps the transparent navbar's dark-on-light links
-   readable at the top of the page. */
+/* A panel inset below the navbar, so the page reads as its own place from
+   the first screen. Its colours are local tokens: light by default, and the
+   dark set below under the dark theme. */
 .about-hero {
+  --hero-bg: var(--surface);
+  --hero-glow: rgba(220, 20, 60, 0.12);
+  --hero-glow-2: rgba(220, 20, 60, 0.07);
+  --hero-text: var(--heading-color);
+  --hero-muted: var(--muted-color);
+  --hero-line: rgba(17, 17, 20, 0.05);
+  --hero-stroke: rgba(17, 17, 20, 0.09);
+  --hero-chip: rgba(17, 17, 20, 0.04);
+  --hero-chip-border: var(--border-strong);
+  --hero-accent: var(--secondary-color);
+  --hero-name-accent: linear-gradient(90deg, var(--secondary-color), var(--brand-deep));
+  --hero-photo-shadow: 0 30px 60px -30px rgba(16, 16, 20, 0.45), 0 0 0 1px var(--border-color);
+  --hero-badge-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -866,12 +878,30 @@ html[dir='rtl'] .btn-arrow {
   margin: calc(var(--nav-h) + 0.5rem) auto 0;
   padding: clamp(2.5rem, 6vw, 5rem);
   border-radius: 32px;
-  color: #fff;
+  color: var(--hero-text);
   background:
-    radial-gradient(60% 80% at 85% 15%, rgba(255, 23, 68, 0.32), transparent 60%),
-    radial-gradient(50% 60% at 0% 100%, rgba(255, 23, 68, 0.16), transparent 60%),
-    #0d0d10;
+    radial-gradient(60% 80% at 85% 15%, var(--hero-glow), transparent 60%),
+    radial-gradient(50% 60% at 0% 100%, var(--hero-glow-2), transparent 60%),
+    var(--hero-bg);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-lg);
+}
+
+:root[data-theme='dark'] .about-hero {
+  --hero-bg: #0d0d10;
+  --hero-glow: rgba(255, 23, 68, 0.32);
+  --hero-glow-2: rgba(255, 23, 68, 0.16);
+  --hero-text: #fff;
+  --hero-muted: rgba(255, 255, 255, 0.72);
+  --hero-line: rgba(255, 255, 255, 0.05);
+  --hero-stroke: rgba(255, 255, 255, 0.08);
+  --hero-chip: rgba(255, 255, 255, 0.08);
+  --hero-chip-border: rgba(255, 255, 255, 0.14);
+  /* The brand red is too dark to read on the dark panel; lift it. */
+  --hero-accent: #ff4d6d;
+  --hero-name-accent: linear-gradient(90deg, #ff4d6d, #ff1744);
+  --hero-photo-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --hero-badge-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* A faint line grid that fades out towards the edges. Decoration only. */
@@ -881,8 +911,8 @@ html[dir='rtl'] .btn-arrow {
   inset: 0;
   z-index: -1;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(var(--hero-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-line) 1px, transparent 1px);
   background-size: 56px 56px;
   -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
   mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
@@ -900,7 +930,7 @@ html[dir='rtl'] .btn-arrow {
   line-height: 1;
   letter-spacing: -0.05em;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.08);
+  -webkit-text-stroke: 1.5px var(--hero-stroke);
   pointer-events: none;
   user-select: none;
 }
@@ -917,7 +947,7 @@ html[dir='rtl'] .btn-arrow {
   gap: 0.5rem;
   min-height: 44px;
   margin-bottom: 1.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--hero-muted);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
@@ -934,7 +964,7 @@ html[dir='rtl'] .about-back svg {
 
 @media (hover: hover) {
   .about-back:hover {
-    color: #fff;
+    color: var(--hero-text);
   }
 
   .about-back:hover svg {
@@ -946,9 +976,8 @@ html[dir='rtl'] .about-back svg {
   }
 }
 
-/* The brand red is too dark to read on the panel; lift it. */
 .about-hero .eyebrow {
-  color: #ff4d6d;
+  color: var(--hero-accent);
 }
 
 .about-name {
@@ -957,12 +986,12 @@ html[dir='rtl'] .about-back svg {
   font-weight: 800;
   line-height: 0.98;
   letter-spacing: -0.045em;
-  color: #fff;
+  color: var(--hero-text);
 }
 
 .about-name span {
   display: block;
-  background: linear-gradient(90deg, #ff4d6d, #ff1744);
+  background: var(--hero-name-accent);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -980,8 +1009,8 @@ html[dir='rtl'] .about-back svg {
   margin-bottom: 1.5rem;
   padding: 0.45rem 1rem;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background-color: var(--hero-chip);
+  border: 1px solid var(--hero-chip-border);
   font-size: 0.95rem;
   font-weight: 700;
 }
@@ -1000,7 +1029,7 @@ html[dir='rtl'] .about-back svg {
   margin-bottom: 2.25rem;
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--hero-muted);
 }
 
 /* Square photo in a portrait frame: the crop only loses studio wall. The
@@ -1036,7 +1065,7 @@ html[dir='rtl'] .about-portrait::before {
   aspect-ratio: 4 / 5;
   border-radius: 24px;
   background-color: #3a3a40;
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: var(--hero-photo-shadow);
 }
 
 .about-frame img {
@@ -1064,7 +1093,8 @@ html[dir='rtl'] .about-portrait::before {
   padding: 0.8rem 1.3rem;
   border-radius: var(--radius);
   background-color: #fff;
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--hero-badge-shadow);
   line-height: 1.1;
 }
 
@@ -1096,9 +1126,9 @@ html[dir='rtl'] .about-portrait::before {
   min-height: 48px;
   padding: 0.7rem 1.3rem;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background-color: var(--hero-chip);
+  border: 1px solid var(--hero-chip-border);
+  color: var(--hero-text);
   font-weight: 700;
   text-decoration: none;
   transition:
