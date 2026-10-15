@@ -21,6 +21,9 @@ import {
   Star,
   Quote,
   ArrowRight,
+  ArrowLeft,
+  ShieldCheck,
+  HandCoins,
   Menu,
   X,
 } from 'lucide-react'
@@ -28,6 +31,7 @@ import './App.css'
 import logoDark from './assets/darkmode.png'
 import logoLight from './assets/lightmode.png'
 import shopPhoto from './assets/download.jpg'
+import ownerPhoto from './assets/owner.png'
 
 // Single source of truth for the shop's phone number. It used to be spelled
 // out in five places, which is how the displayed number and the dialled one
@@ -67,6 +71,21 @@ const EMAIL = {
   info: 'info@zeintyres.com',        // general enquiries
   support: 'support@zeintyres.com',  // after-sales / help
 }
+
+// The owner, for the About page. Years of experience are worked out from
+// `since`, so the number stays right without anyone editing it each year.
+const OWNER = {
+  since: 2009,
+  instagram: 'https://www.instagram.com/abdelkarim.elzein/',
+  facebook: 'https://www.facebook.com/abdul.karim.a.el.zein',
+}
+
+// The site is two documents built from this one App: index.html is the home
+// page and about/index.html the owner's page. A folder with its own
+// index.html serves at /about/ on any static host, with no rewrite rules.
+const HOME_URL = import.meta.env.BASE_URL
+const ABOUT_URL = `${HOME_URL}about/`
+const IS_ABOUT = /\/about(\/|\/index\.html)?$/.test(window.location.pathname)
 
 // Facebook Logo Component
 const FacebookLogo = ({ size = 40 }) => (
@@ -122,6 +141,32 @@ const translations = {
     statHours: 'hours a day',
     statDays: 'days a week',
     statServices: 'services under one roof',
+    aboutEyebrow: 'About Zein Tyres',
+    backHome: 'Back to home',
+    ownerName: 'Abdul Karim Al Zein',
+    ownerFirst: 'Abdul Karim',
+    ownerLast: 'Al Zein',
+    ownerRole: 'Owner & CEO',
+    aboutLede: 'The man behind Zein Tyres, working with tyres, rims and wheels since 2009.',
+    aboutSince: 'Since',
+    ownerFollow: 'Follow Abdul Karim',
+    aboutStoryEyebrow: 'His story',
+    aboutStoryTitle: 'Treat every car as if it were your own.',
+    aboutBio: [
+      'Abdul Karim Al Zein is the owner and CEO of Zein Tyres. He has been working with tyres, rims and wheels since 2009, and he built the shop around one simple idea: treat every customer\'s car as if it were your own.',
+      'That means honest advice on what your car actually needs, fair prices, and a workshop that stays open day and night, because a flat tyre never waits for business hours.',
+    ],
+    aboutYears: 'years of experience',
+    aboutStarted: 'the year he started',
+    aboutOpen: 'open, all year round',
+    valuesEyebrow: 'What he stands for',
+    valuesTitle: 'How he runs the shop',
+    values: [
+      { title: 'Honest advice', text: 'He tells you what your car actually needs, and nothing it doesn\'t.' },
+      { title: 'Fair prices', text: 'Clear prices for tyres, rims and repairs, with no surprises at the end.' },
+      { title: 'Day and night', text: 'The shop stays open 24/7, because a flat tyre never waits for business hours.' },
+    ],
+    aboutCtaTitle: 'Need tyres? Come and see us.',
     storyEyebrow: 'How it works',
     storyTitle: 'From flat tyre to back on the road',
     storySteps: [
@@ -166,6 +211,7 @@ const translations = {
     tiktok: 'TikTok',
     copyright: '© 2026 Zein Tyres. All rights reserved.',
     professionalService: 'Professional tire service in Amchit, Lebanon',
+    about: 'About',
     services: 'Services',
     gallery: 'Gallery',
     reviews: 'Reviews',
@@ -203,6 +249,32 @@ const translations = {
     statHours: 'ساعة في اليوم',
     statDays: 'أيام في الأسبوع',
     statServices: 'خدمات تحت سقف واحد',
+    aboutEyebrow: 'عن زين تايرز',
+    backHome: 'العودة إلى الرئيسية',
+    ownerName: 'عبد الكريم الزين',
+    ownerFirst: 'عبد الكريم',
+    ownerLast: 'الزين',
+    ownerRole: 'المالك والرئيس التنفيذي',
+    aboutLede: 'الرجل وراء زين تايرز، يعمل في مجال الإطارات والجنوط والعجلات منذ عام 2009.',
+    aboutSince: 'منذ',
+    ownerFollow: 'تابع عبد الكريم',
+    aboutStoryEyebrow: 'قصته',
+    aboutStoryTitle: 'عامل كل سيارة كأنها سيارتك.',
+    aboutBio: [
+      'عبد الكريم الزين هو مالك زين تايرز ورئيسها التنفيذي. يعمل في مجال الإطارات والجنوط والعجلات منذ عام 2009، وقد بنى المحل على فكرة بسيطة: أن يعامل سيارة كل زبون كأنها سيارته.',
+      'وهذا يعني نصيحة صادقة بما تحتاجه سيارتك فعلاً، وأسعاراً عادلة، وورشة مفتوحة ليلاً ونهاراً، لأن الإطار المثقوب لا ينتظر ساعات العمل.',
+    ],
+    aboutYears: 'سنة من الخبرة',
+    aboutStarted: 'سنة البداية',
+    aboutOpen: 'مفتوح طوال السنة',
+    valuesEyebrow: 'ما يؤمن به',
+    valuesTitle: 'كيف يدير المحل',
+    values: [
+      { title: 'نصيحة صادقة', text: 'يقول لك ما تحتاجه سيارتك فعلاً، ولا شيء غير ذلك.' },
+      { title: 'أسعار عادلة', text: 'أسعار واضحة للإطارات والجنوط والتصليحات، بلا مفاجآت في النهاية.' },
+      { title: 'ليلاً ونهاراً', text: 'المحل مفتوح 24/7، لأن الإطار المثقوب لا ينتظر ساعات العمل.' },
+    ],
+    aboutCtaTitle: 'تحتاج إطارات؟ تفضّل لزيارتنا.',
     storyEyebrow: 'كيف نعمل',
     storyTitle: 'من الإطار المثقوب إلى الطريق من جديد',
     storySteps: [
@@ -247,6 +319,7 @@ const translations = {
     tiktok: 'تيك توك',
     copyright: '© 2026 زين تايرز. جميع الحقوق محفوظة.',
     professionalService: 'خدمة إطارات احترافية في عمشيت، لبنان',
+    about: 'من نحن',
     services: 'الخدمات',
     gallery: 'المعرض',
     reviews: 'التقييمات',
@@ -582,7 +655,7 @@ function ScrollLitText({ text, className }) {
 
 // Counts up from 0 the first time it scrolls into view. Screen readers get
 // the real number straight away; the ticking copy is decoration.
-function CountUp({ to, duration = 1600 }) {
+function CountUp({ to, suffix = '', duration = 1600 }) {
   const ref = useRef(null)
   const [value, setValue] = useState(() => (prefersReducedMotion() ? to : 0))
 
@@ -613,8 +686,8 @@ function CountUp({ to, duration = 1600 }) {
 
   return (
     <span className="stat-value" ref={ref}>
-      <span aria-hidden="true">{value}</span>
-      <span className="visually-hidden">{to}</span>
+      <span aria-hidden="true">{value}{suffix}</span>
+      <span className="visually-hidden">{to}{suffix}</span>
     </span>
   )
 }
@@ -743,6 +816,128 @@ const initials = (name) =>
     .map((part) => part[0]?.toUpperCase())
     .join('')
 
+const VALUE_ICONS = [ShieldCheck, HandCoins, Clock]
+
+// The owner's page. It shares the navbar and footer with the home page;
+// everything between them is its own, starting with a dark hero that stays
+// dark in both themes so the page reads as somewhere new.
+function AboutPage({ t, language, onWhatsApp }) {
+  // Milena's review is the one that talks about the owner.
+  const quote = REVIEWS[0]
+
+  return (
+    <main className="about-page">
+      <section className="about-hero">
+        <span className="about-watermark" aria-hidden="true">{OWNER.since}</span>
+        <div className="about-hero-text">
+          <a href={HOME_URL} className="about-back">
+            <ArrowLeft size={18} aria-hidden="true" />
+            {t.backHome}
+          </a>
+          <span className="eyebrow">{t.aboutEyebrow}</span>
+          <h1 className="about-name">
+            {t.ownerFirst} <span>{t.ownerLast}</span>
+          </h1>
+          <p className="about-role">{t.ownerRole}</p>
+          <p className="about-lede">{t.aboutLede}</p>
+          <div className="about-socials" role="group" aria-label={t.ownerFollow}>
+            <a href={OWNER.instagram} target="_blank" rel="noopener noreferrer" className="about-social instagram">
+              <InstagramLogo size={20} />
+              <span>{t.instagram}</span>
+            </a>
+            <a href={OWNER.facebook} target="_blank" rel="noopener noreferrer" className="about-social facebook">
+              <FacebookLogo size={20} />
+              <span>{t.facebook}</span>
+            </a>
+          </div>
+        </div>
+        <div className="about-portrait">
+          <div className="about-frame">
+            <img src={ownerPhoto} alt={t.ownerName} width="823" height="822" fetchPriority="high" />
+          </div>
+          <p className="about-badge">
+            <small>{t.aboutSince}</small>
+            <strong>{OWNER.since}</strong>
+          </p>
+        </div>
+      </section>
+
+      <section className="about-story">
+        <div className="about-story-head" data-reveal>
+          <span className="eyebrow">{t.aboutStoryEyebrow}</span>
+          <h2>{t.aboutStoryTitle}</h2>
+        </div>
+        <div className="about-story-body">
+          {t.aboutBio.map((paragraph) => (
+            <p key={paragraph} data-reveal>{paragraph}</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="about-numbers">
+        <div className="stats">
+          <div className="stat" data-reveal>
+            <CountUp to={new Date().getFullYear() - OWNER.since} suffix="+" />
+            <span className="stat-label">{t.aboutYears}</span>
+          </div>
+          <div className="stat" data-reveal>
+            <span className="stat-value">{OWNER.since}</span>
+            <span className="stat-label">{t.aboutStarted}</span>
+          </div>
+          <div className="stat" data-reveal>
+            <span className="stat-value" dir="ltr">24/7</span>
+            <span className="stat-label">{t.aboutOpen}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="about-values">
+        <div className="section-header" data-reveal>
+          <span className="eyebrow">{t.valuesEyebrow}</span>
+          <h2>{t.valuesTitle}</h2>
+        </div>
+        <div className="about-values-grid">
+          {t.values.map((value, i) => {
+            const Icon = VALUE_ICONS[i]
+            return (
+              <div className="service-card" key={value.title} data-reveal data-spotlight>
+                <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+                <h3>{value.title}</h3>
+                <p>{value.text}</p>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      <figure className="about-quote" data-reveal>
+        <Quote size={44} className="about-quote-mark" aria-hidden="true" />
+        <blockquote>{language === 'ar' ? quote.ar : quote.en}</blockquote>
+        <figcaption>
+          <strong>{quote.author}</strong>
+          {' · '}
+          <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">{t.googleReview}</a>
+        </figcaption>
+      </figure>
+
+      <section className="about-cta" data-reveal="zoom">
+        <h2>{t.aboutCtaTitle}</h2>
+        <p>{t.location}</p>
+        <div className="about-cta-buttons">
+          <a href={`${HOME_URL}#contact`} className="btn btn-light">
+            {t.contactBtn}
+            <ArrowRight size={20} className="btn-arrow" aria-hidden="true" />
+          </a>
+          <button className="btn btn-secondary" onClick={onWhatsApp}>
+            <MessageCircle size={20} aria-hidden="true" />
+            {t.whatsappBtn}
+          </button>
+        </div>
+      </section>
+    </main>
+  )
+}
+
 function App() {
   // An explicit choice wins; otherwise follow the device's light/dark setting.
   const [darkMode, setDarkMode] = useState(() => {
@@ -781,14 +976,21 @@ function App() {
     withViewTransition('lang', () => setLanguage(next))
   }
 
+  // Full paths rather than bare #hashes, so the same links work from the
+  // About page. On the home page Lenis still treats them as in-page anchors.
   const navItems = [
-    { href: '#services', label: t.services },
-    { href: '#gallery', label: t.gallery },
-    { href: '#testimonials', label: t.reviews },
-    { href: '#contact', label: t.contact },
-    { href: '#social', label: t.followUs },
+    { href: ABOUT_URL, label: t.about },
+    { href: `${HOME_URL}#services`, label: t.services },
+    { href: `${HOME_URL}#gallery`, label: t.gallery },
+    { href: `${HOME_URL}#testimonials`, label: t.reviews },
+    { href: `${HOME_URL}#contact`, label: t.contact },
+    { href: `${HOME_URL}#social`, label: t.followUs },
   ]
-  const isActive = (href) => href === `#${activeSection}`
+  const isActive = (href) => (IS_ABOUT ? href === ABOUT_URL : href === `${HOME_URL}#${activeSection}`)
+  const navLinkProps = (href) => ({
+    className: isActive(href) ? 'active' : undefined,
+    'aria-current': isActive(href) ? (IS_ABOUT ? 'page' : 'true') : undefined,
+  })
 
   useEffect(() => {
     const handleScroll = () => {
@@ -796,6 +998,13 @@ function App() {
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Arriving from the About page on a section link (/#services): the browser
+  // looks for the section before React has drawn it, so jump there now.
+  useEffect(() => {
+    if (IS_ABOUT || !window.location.hash) return
+    document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView()
   }, [])
 
   // Close the mobile menu on Escape, and whenever the viewport grows to desktop
@@ -848,19 +1057,15 @@ function App() {
       {/* Header/Navigation */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
         <div className="navbar-container">
-          {/* No element has id="top", so Lenis glides to the very top. */}
-          <a href="#top" className="logo-section" onClick={() => setMenuOpen(false)}>
+          {/* No element has id="top", so Lenis glides to the very top. From
+              the About page the logo goes home. */}
+          <a href={IS_ABOUT ? HOME_URL : '#top'} className="logo-section" onClick={() => setMenuOpen(false)}>
             <img src={darkMode ? logoDark : logoLight} alt="Zein Tyres Logo" className="logo" />
             <h1 className="brand-name">Zein Tyres</h1>
           </a>
           <nav className="nav-links">
             {navItems.map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                className={isActive(href) ? 'active' : undefined}
-                aria-current={isActive(href) ? 'true' : undefined}
-              >
+              <a key={href} href={href} {...navLinkProps(href)}>
                 {label}
               </a>
             ))}
@@ -895,8 +1100,7 @@ function App() {
             <a
               key={href}
               href={href}
-              className={isActive(href) ? 'active' : undefined}
-              aria-current={isActive(href) ? 'true' : undefined}
+              {...navLinkProps(href)}
               onClick={() => setMenuOpen(false)}
             >
               {label}
@@ -914,292 +1118,298 @@ function App() {
         />
       )}
 
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-content">
-          <p className="hero-pill">
-            <span className="live-dot" aria-hidden="true" />
-            {t.liveNow}
-          </p>
-          <h2 className="hero-subtitle">{t.welcome}</h2>
-          <h1 className="hero-title">Zein Tyres</h1>
-          <p className="hero-tagline">{t.tagline}</p>
-          <p className="hero-description">
-            {t.description}
-            <br />
-            <strong>{t.hours24}</strong>
-          </p>
-          <div className="hero-buttons">
-            <a href="#contact" className="btn btn-primary">
-              {t.contactBtn}
-              <ArrowRight size={20} className="btn-arrow" aria-hidden="true" />
-            </a>
-            <button className="btn btn-secondary" onClick={handleWhatsApp}>
-              <MessageCircle size={20} aria-hidden="true" />
-              {t.whatsappBtn}
-            </button>
-          </div>
-          <p className="location-badge">
-            <MapPin size={18} aria-hidden="true" />
-            {t.location}
-          </p>
-        </div>
-        <div className="hero-visual">
-          <div className="hero-image">
-            <img src={shopPhoto} alt="Zein Tyres Shop" width="1024" height="768" fetchPriority="high" />
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Info Bar */}
-      <section className="quick-info" data-reveal="zoom">
-        <div className="info-card" data-reveal>
-          <span className="info-icon"><Clock size={26} aria-hidden="true" /></span>
-          <h3>{t.open24}</h3>
-          <p>{t.alwaysReady}</p>
-        </div>
-        <div className="info-card" data-reveal>
-          <span className="info-icon"><Phone size={26} aria-hidden="true" /></span>
-          <h3><a href={`tel:+${PHONE.e164}`} className="info-link" dir="ltr">{PHONE.local}</a></h3>
-          <p>{t.callWhatsapp}</p>
-        </div>
-        <div className="info-card" data-reveal>
-          <span className="info-icon"><Mail size={26} aria-hidden="true" /></span>
-          <h3>{t.emailUs}</h3>
-          <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
-        </div>
-        <div className="info-card" data-reveal>
-          <span className="info-icon"><Truck size={26} aria-hidden="true" /></span>
-          <h3>{t.roadsideService}</h3>
-          <p>{t.weComeToYou}</p>
-        </div>
-      </section>
-
-      {/* Statement - lights up word by word as it scrolls past */}
-      <section className="statement">
-        <ScrollLitText text={t.statement} className="statement-text" />
-        <div className="stats">
-          <div className="stat" data-reveal>
-            <CountUp to={24} />
-            <span className="stat-label">{t.statHours}</span>
-          </div>
-          <div className="stat" data-reveal>
-            <CountUp to={7} />
-            <span className="stat-label">{t.statDays}</span>
-          </div>
-          <div className="stat" data-reveal>
-            <CountUp to={6} />
-            <span className="stat-label">{t.statServices}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section - the track is the scroll distance over which the
-          cards are dealt from one pile into the grid while the stage stays
-          pinned. The deal moves each .service-deal wrapper, so it never
-          fights the card's own reveal. */}
-      <section id="services" className="services">
-        <div className="services-track">
-          <div className="services-stage">
-            <div className="section-header" data-reveal>
-              <span className="eyebrow">{t.servicesEyebrow}</span>
-              <h2>{t.ourServices}</h2>
-              <p>{t.servicesDesc}</p>
-            </div>
-            <div className="services-grid">
-              {[
-                [Tag, t.tireSales, t.tireSalesDesc],
-                [Hammer, t.tireRepairs, t.tireRepairsDesc],
-                [Gauge, t.maintenance, t.maintenanceDesc],
-                [Crosshair, t.wheelAlignment, t.wheelAlignmentDesc],
-                [Disc, t.rimSales, t.rimSalesDesc],
-                [Cog, t.rimRepairs, t.rimRepairsDesc],
-              ].map(([Icon, title, desc]) => (
-                <div className="service-deal" key={title}>
-                  <div className="service-card" data-reveal data-spotlight>
-                    <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
-                    <h3>{title}</h3>
-                    <p>{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works - the stage stays pinned while the track scrolls past,
-          and the steps and the wheel play through as it does */}
-      <section id="how-it-works" className="story">
-        <div className="story-track">
-          <div className="story-stage">
-            <div className="section-header story-header" data-reveal>
-              <span className="eyebrow">{t.storyEyebrow}</span>
-              <h2>{t.storyTitle}</h2>
-            </div>
-            <div className="story-visual">
-              <WheelFrames />
-            </div>
-            <ol className="story-steps">
-              {t.storySteps.map((step, i) => (
-                <li className="story-step" key={i}>
-                  <span className="story-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                  <h3>{step.title}</h3>
-                  <p>{step.text}</p>
-                </li>
-              ))}
-            </ol>
-            <div className="story-progress" aria-hidden="true">
-              {t.storySteps.map((step) => <span key={step.title} />)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section id="gallery" className="gallery">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.galleryEyebrow}</span>
-          <h2>{t.ourShop}</h2>
-          <p>{t.shopDesc}</p>
-        </div>
-        <div className="gallery-grid">
-          <div className="gallery-item">
-            <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
-            <p>{t.professionalSetup}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="testimonials">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.reviewsEyebrow}</span>
-          <h2>{t.customerReviews}</h2>
-          <p>{t.reviewsDesc}</p>
-        </div>
-        <div className="testimonials-scroll" tabIndex={0} data-lenis-prevent>
-          {REVIEWS.map((review) => (
-            <figure className="testimonial-card" key={review.author} data-reveal data-spotlight>
-              <div className="testimonial-top">
-                <div className="stars" aria-label={`${review.rating} / 5`}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      size={18}
-                      className={star <= review.rating ? 'star-icon' : 'star-icon star-empty'}
-                      fill={star <= review.rating ? 'currentColor' : 'none'}
-                    />
-                  ))}
-                </div>
-                <Quote size={32} className="quote-mark" aria-hidden="true" />
-              </div>
-              <blockquote>{language === 'ar' ? review.ar : review.en}</blockquote>
-              <figcaption className="author">
-                <span className="avatar" aria-hidden="true">{initials(review.author)}</span>
-                <span className="author-text">
-                  <strong>{review.author}</strong>
-                  <small>{t.googleReview}</small>
-                </span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-        <p className="reviews-link" data-reveal>
-          <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">
-            {t.seeAllReviews}
-          </a>
-        </p>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="contact">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.contactEyebrow}</span>
-          <h2>{t.getInTouch}</h2>
-          <p>{t.helpDesc}</p>
-        </div>
-        <div className="contact-container">
-          <div className="contact-info">
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><Phone size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.phoneLabel}</h3>
-                <a href={`tel:+${PHONE.e164}`} dir="ltr">{PHONE.local}</a>
-              </div>
-            </div>
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><MessageCircle size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.whatsappLabel}</h3>
-                <button onClick={handleWhatsApp} className="link-button" dir="ltr">
-                  {PHONE.intl}
+      {IS_ABOUT ? (
+        <AboutPage t={t} language={language} onWhatsApp={handleWhatsApp} />
+      ) : (
+        <>
+          {/* Hero Section */}
+          <section className="hero">
+            <div className="hero-content">
+              <p className="hero-pill">
+                <span className="live-dot" aria-hidden="true" />
+                {t.liveNow}
+              </p>
+              <h2 className="hero-subtitle">{t.welcome}</h2>
+              <h1 className="hero-title">Zein Tyres</h1>
+              <p className="hero-tagline">{t.tagline}</p>
+              <p className="hero-description">
+                {t.description}
+                <br />
+                <strong>{t.hours24}</strong>
+              </p>
+              <div className="hero-buttons">
+                <a href="#contact" className="btn btn-primary">
+                  {t.contactBtn}
+                  <ArrowRight size={20} className="btn-arrow" aria-hidden="true" />
+                </a>
+                <button className="btn btn-secondary" onClick={handleWhatsApp}>
+                  <MessageCircle size={20} aria-hidden="true" />
+                  {t.whatsappBtn}
                 </button>
               </div>
+              <p className="location-badge">
+                <MapPin size={18} aria-hidden="true" />
+                {t.location}
+              </p>
             </div>
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><Mail size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.emailLabel}</h3>
-                <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+            <div className="hero-visual">
+              <div className="hero-image">
+                <img src={shopPhoto} alt="Zein Tyres Shop" width="1024" height="768" fetchPriority="high" />
               </div>
             </div>
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><LifeBuoy size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.supportLabel}</h3>
-                <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
-              </div>
-            </div>
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><MapPin size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.locationLabel}</h3>
-                <p>{t.amchitLeb}<br />{t.facingMcDonald}</p>
-              </div>
-            </div>
-            <div className="contact-item" data-reveal="start" data-spotlight>
-              <span className="contact-icon"><Clock size={22} aria-hidden="true" /></span>
-              <div className="contact-text">
-                <h3>{t.hoursLabel}</h3>
-                <p>{t.open24}<br />{t.alwaysReady}</p>
-              </div>
-            </div>
-          </div>
-          <div className="map-container" data-reveal="end">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.5235848748753!2d35.59088!3d34.13333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151f5db3b7c5d5ad%3A0xf90bd77fcc58d36a!2sZein%20Tyres!5e0!3m2!1sen!2slb!4v1"
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Zein Tyres Location"
-            ></iframe>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* Social Media Section */}
-      <section id="social" className="social-media">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.socialEyebrow}</span>
-          <h2>{t.followUs}</h2>
-          <p>{t.socialDesc}</p>
-        </div>
-        <div className="social-links">
-          <a href="https://www.facebook.com/profile.php?id=61593747883398" target="_blank" rel="noopener noreferrer" data-reveal className="social-link facebook">
-            <FacebookLogo size={40} />
-            <span>{t.facebook}</span>
-          </a>
-          <a href="https://www.instagram.com/zein_tyres/" target="_blank" rel="noopener noreferrer" data-reveal className="social-link instagram">
-            <InstagramLogo size={40} />
-            <span>{t.instagram}</span>
-          </a>
-          <a href="https://www.tiktok.com/@zein.tires" target="_blank" rel="noopener noreferrer" data-reveal className="social-link tiktok">
-            <TikTokLogo size={40} />
-            <span>{t.tiktok}</span>
-          </a>
-        </div>
-      </section>
+          {/* Quick Info Bar */}
+          <section className="quick-info" data-reveal="zoom">
+            <div className="info-card" data-reveal>
+              <span className="info-icon"><Clock size={26} aria-hidden="true" /></span>
+              <h3>{t.open24}</h3>
+              <p>{t.alwaysReady}</p>
+            </div>
+            <div className="info-card" data-reveal>
+              <span className="info-icon"><Phone size={26} aria-hidden="true" /></span>
+              <h3><a href={`tel:+${PHONE.e164}`} className="info-link" dir="ltr">{PHONE.local}</a></h3>
+              <p>{t.callWhatsapp}</p>
+            </div>
+            <div className="info-card" data-reveal>
+              <span className="info-icon"><Mail size={26} aria-hidden="true" /></span>
+              <h3>{t.emailUs}</h3>
+              <p><a href={`mailto:${EMAIL.info}`} className="info-link">{EMAIL.info}</a></p>
+            </div>
+            <div className="info-card" data-reveal>
+              <span className="info-icon"><Truck size={26} aria-hidden="true" /></span>
+              <h3>{t.roadsideService}</h3>
+              <p>{t.weComeToYou}</p>
+            </div>
+          </section>
+
+          {/* Statement - lights up word by word as it scrolls past */}
+          <section className="statement">
+            <ScrollLitText text={t.statement} className="statement-text" />
+            <div className="stats">
+              <div className="stat" data-reveal>
+                <CountUp to={24} />
+                <span className="stat-label">{t.statHours}</span>
+              </div>
+              <div className="stat" data-reveal>
+                <CountUp to={7} />
+                <span className="stat-label">{t.statDays}</span>
+              </div>
+              <div className="stat" data-reveal>
+                <CountUp to={6} />
+                <span className="stat-label">{t.statServices}</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Services Section - the track is the scroll distance over which the
+              cards are dealt from one pile into the grid while the stage stays
+              pinned. The deal moves each .service-deal wrapper, so it never
+              fights the card's own reveal. */}
+          <section id="services" className="services">
+            <div className="services-track">
+              <div className="services-stage">
+                <div className="section-header" data-reveal>
+                  <span className="eyebrow">{t.servicesEyebrow}</span>
+                  <h2>{t.ourServices}</h2>
+                  <p>{t.servicesDesc}</p>
+                </div>
+                <div className="services-grid">
+                  {[
+                    [Tag, t.tireSales, t.tireSalesDesc],
+                    [Hammer, t.tireRepairs, t.tireRepairsDesc],
+                    [Gauge, t.maintenance, t.maintenanceDesc],
+                    [Crosshair, t.wheelAlignment, t.wheelAlignmentDesc],
+                    [Disc, t.rimSales, t.rimSalesDesc],
+                    [Cog, t.rimRepairs, t.rimRepairsDesc],
+                  ].map(([Icon, title, desc]) => (
+                    <div className="service-deal" key={title}>
+                      <div className="service-card" data-reveal data-spotlight>
+                        <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+                        <h3>{title}</h3>
+                        <p>{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* How it works - the stage stays pinned while the track scrolls past,
+              and the steps and the wheel play through as it does */}
+          <section id="how-it-works" className="story">
+            <div className="story-track">
+              <div className="story-stage">
+                <div className="section-header story-header" data-reveal>
+                  <span className="eyebrow">{t.storyEyebrow}</span>
+                  <h2>{t.storyTitle}</h2>
+                </div>
+                <div className="story-visual">
+                  <WheelFrames />
+                </div>
+                <ol className="story-steps">
+                  {t.storySteps.map((step, i) => (
+                    <li className="story-step" key={i}>
+                      <span className="story-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                      <h3>{step.title}</h3>
+                      <p>{step.text}</p>
+                    </li>
+                  ))}
+                </ol>
+                <div className="story-progress" aria-hidden="true">
+                  {t.storySteps.map((step) => <span key={step.title} />)}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Gallery Section */}
+          <section id="gallery" className="gallery">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.galleryEyebrow}</span>
+              <h2>{t.ourShop}</h2>
+              <p>{t.shopDesc}</p>
+            </div>
+            <div className="gallery-grid">
+              <div className="gallery-item">
+                <img src={shopPhoto} alt="Shop Interior" loading="lazy" decoding="async" />
+                <p>{t.professionalSetup}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Testimonials Section */}
+          <section id="testimonials" className="testimonials">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.reviewsEyebrow}</span>
+              <h2>{t.customerReviews}</h2>
+              <p>{t.reviewsDesc}</p>
+            </div>
+            <div className="testimonials-scroll" tabIndex={0} data-lenis-prevent>
+              {REVIEWS.map((review) => (
+                <figure className="testimonial-card" key={review.author} data-reveal data-spotlight>
+                  <div className="testimonial-top">
+                    <div className="stars" aria-label={`${review.rating} / 5`}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={18}
+                          className={star <= review.rating ? 'star-icon' : 'star-icon star-empty'}
+                          fill={star <= review.rating ? 'currentColor' : 'none'}
+                        />
+                      ))}
+                    </div>
+                    <Quote size={32} className="quote-mark" aria-hidden="true" />
+                  </div>
+                  <blockquote>{language === 'ar' ? review.ar : review.en}</blockquote>
+                  <figcaption className="author">
+                    <span className="avatar" aria-hidden="true">{initials(review.author)}</span>
+                    <span className="author-text">
+                      <strong>{review.author}</strong>
+                      <small>{t.googleReview}</small>
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="reviews-link" data-reveal>
+              <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">
+                {t.seeAllReviews}
+              </a>
+            </p>
+          </section>
+
+          {/* Contact Section */}
+          <section id="contact" className="contact">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.contactEyebrow}</span>
+              <h2>{t.getInTouch}</h2>
+              <p>{t.helpDesc}</p>
+            </div>
+            <div className="contact-container">
+              <div className="contact-info">
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><Phone size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.phoneLabel}</h3>
+                    <a href={`tel:+${PHONE.e164}`} dir="ltr">{PHONE.local}</a>
+                  </div>
+                </div>
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><MessageCircle size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.whatsappLabel}</h3>
+                    <button onClick={handleWhatsApp} className="link-button" dir="ltr">
+                      {PHONE.intl}
+                    </button>
+                  </div>
+                </div>
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><Mail size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.emailLabel}</h3>
+                    <a href={`mailto:${EMAIL.info}`}>{EMAIL.info}</a>
+                  </div>
+                </div>
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><LifeBuoy size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.supportLabel}</h3>
+                    <a href={`mailto:${EMAIL.support}`}>{EMAIL.support}</a>
+                  </div>
+                </div>
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><MapPin size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.locationLabel}</h3>
+                    <p>{t.amchitLeb}<br />{t.facingMcDonald}</p>
+                  </div>
+                </div>
+                <div className="contact-item" data-reveal="start" data-spotlight>
+                  <span className="contact-icon"><Clock size={22} aria-hidden="true" /></span>
+                  <div className="contact-text">
+                    <h3>{t.hoursLabel}</h3>
+                    <p>{t.open24}<br />{t.alwaysReady}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="map-container" data-reveal="end">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.5235848748753!2d35.59088!3d34.13333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151f5db3b7c5d5ad%3A0xf90bd77fcc58d36a!2sZein%20Tyres!5e0!3m2!1sen!2slb!4v1"
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Zein Tyres Location"
+                ></iframe>
+              </div>
+            </div>
+          </section>
+
+          {/* Social Media Section */}
+          <section id="social" className="social-media">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.socialEyebrow}</span>
+              <h2>{t.followUs}</h2>
+              <p>{t.socialDesc}</p>
+            </div>
+            <div className="social-links">
+              <a href="https://www.facebook.com/profile.php?id=61593747883398" target="_blank" rel="noopener noreferrer" data-reveal className="social-link facebook">
+                <FacebookLogo size={40} />
+                <span>{t.facebook}</span>
+              </a>
+              <a href="https://www.instagram.com/zein_tyres/" target="_blank" rel="noopener noreferrer" data-reveal className="social-link instagram">
+                <InstagramLogo size={40} />
+                <span>{t.instagram}</span>
+              </a>
+              <a href="https://www.tiktok.com/@zein.tires" target="_blank" rel="noopener noreferrer" data-reveal className="social-link tiktok">
+                <TikTokLogo size={40} />
+                <span>{t.tiktok}</span>
+              </a>
+            </div>
+          </section>
+        </>
+      )}
 
       {/* Footer */}
       <footer className="footer">

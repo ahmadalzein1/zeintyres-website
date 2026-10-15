@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- The About page. Same app as the home page (src/App.jsx picks the page
+         from the URL); this file only exists so /about/ is a real document
+         with its own title, description and preview tags. The icons, theme
+         script and fonts mirror index.html - keep the two in step. -->
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Meet Abdul Karim Al Zein, owner and CEO of Zein Tyres in Amchit, Lebanon - working with tyres, rims and wheels since 2009." />
+    <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>About Abdul Karim Al Zein - Owner of Zein Tyres, Amchit</title>
+
+    <!-- Keys and defaults must match readPref() in src/App.jsx. -->
+    <script>
+      try {
+        var zt = document.documentElement
+        var theme = localStorage.getItem('zt-theme')
+        if (theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches) {
+          zt.setAttribute('data-theme', 'dark')
+        }
+        if (localStorage.getItem('zt-lang') === 'ar') {
+          zt.dir = 'rtl'
+          zt.lang = 'ar'
+        }
+      } catch (e) {}
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="canonical" href="https://www.zeintyres.com/about/" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Zein Tyres" />
+    <meta property="og:url" content="https://www.zeintyres.com/about/" />
+    <meta property="og:title" content="About Abdul Karim Al Zein - Owner of Zein Tyres" />
+    <meta property="og:description" content="Owner and CEO of Zein Tyres in Amchit, Lebanon - working with tyres, rims and wheels since 2009." />
+    <meta property="og:image" content="https://www.zeintyres.com/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Zein Tyres - tire sales, repairs, maintenance and wheel alignment in Amchit, Lebanon" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_LB" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="About Abdul Karim Al Zein - Owner of Zein Tyres" />
+    <meta name="twitter:description" content="Owner and CEO of Zein Tyres in Amchit, Lebanon - working with tyres, rims and wheels since 2009." />
+    <meta name="twitter:image" content="https://www.zeintyres.com/og-image.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "url": "https://www.zeintyres.com/about/",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Abdul Karim Al Zein",
+        "jobTitle": "Owner & CEO",
+        "worksFor": {
+          "@type": "AutoRepair",
+          "@id": "https://www.zeintyres.com/#business",
+          "name": "Zein Tyres",
+          "url": "https://www.zeintyres.com/"
+        },
+        "sameAs": [
+          "https://www.instagram.com/abdelkarim.elzein/",
+          "https://www.facebook.com/abdul.karim.a.el.zein"
+        ]
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script src="https://zein-tyres-ai-chatbot-production.up.railway.app/widget.js" defer></script>
+  </body>
+</html>

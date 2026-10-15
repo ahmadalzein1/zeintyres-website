@@ -847,6 +847,507 @@ html[dir='rtl'] .btn-arrow {
 }
 
 /* ==========================================================================
+   About page (about/index.html)
+   ========================================================================== */
+/* A dark panel in both themes, like the footer, so the page reads as its own
+   place from the first screen. It is inset below the navbar rather than
+   running under it, which keeps the transparent navbar's dark-on-light links
+   readable at the top of the page. */
+.about-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: center;
+  gap: 3rem;
+  width: calc(min(1320px, 100%) - 2 * var(--gutter));
+  min-height: calc(100svh - var(--nav-h) - 2rem);
+  margin: calc(var(--nav-h) + 0.5rem) auto 0;
+  padding: clamp(2.5rem, 6vw, 5rem);
+  border-radius: 32px;
+  color: #fff;
+  background:
+    radial-gradient(60% 80% at 85% 15%, rgba(255, 23, 68, 0.32), transparent 60%),
+    radial-gradient(50% 60% at 0% 100%, rgba(255, 23, 68, 0.16), transparent 60%),
+    #0d0d10;
+  box-shadow: var(--shadow-lg);
+}
+
+/* A faint line grid that fades out towards the edges. Decoration only. */
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  pointer-events: none;
+}
+
+/* The founding year in giant outlined numerals behind everything. */
+.about-watermark {
+  position: absolute;
+  z-index: -1;
+  inset-block-end: -0.2em;
+  inset-inline-start: -0.04em;
+  font-size: clamp(8rem, 26vw, 22rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+.about-hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.about-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin-bottom: 1.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.about-back svg {
+  transition: translate 0.3s var(--ease-out);
+}
+
+html[dir='rtl'] .about-back svg {
+  scale: -1 1;
+}
+
+@media (hover: hover) {
+  .about-back:hover {
+    color: #fff;
+  }
+
+  .about-back:hover svg {
+    translate: -4px 0;
+  }
+
+  html[dir='rtl'] .about-back:hover svg {
+    translate: 4px 0;
+  }
+}
+
+/* The brand red is too dark to read on the panel; lift it. */
+.about-hero .eyebrow {
+  color: #ff4d6d;
+}
+
+.about-name {
+  margin-bottom: 1.5rem;
+  font-size: clamp(2.9rem, 7.5vw, 6.25rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: #fff;
+}
+
+.about-name span {
+  display: block;
+  background: linear-gradient(90deg, #ff4d6d, #ff1744);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Arabic letters need room above and below to join and stack. */
+:root[lang='ar'] .about-name {
+  line-height: 1.3;
+}
+
+.about-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.about-role::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff1744;
+  box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.25);
+}
+
+.about-lede {
+  max-width: 34ch;
+  margin-bottom: 2.25rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Square photo in a portrait frame: the crop only loses studio wall. The
+   fill matches that wall while the image loads. */
+.about-portrait {
+  position: relative;
+  isolation: isolate;
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* A tilted brand-red card peeking out from behind the photo. */
+.about-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ff1744, #a80d2e);
+  box-shadow: 0 30px 80px -20px rgba(255, 23, 68, 0.45);
+  translate: 1.1rem 1.1rem;
+  rotate: 3deg;
+}
+
+html[dir='rtl'] .about-portrait::before {
+  translate: -1.1rem 1.1rem;
+  rotate: -3deg;
+}
+
+.about-frame {
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 24px;
+  background-color: #3a3a40;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.about-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% 50%;
+  transition: transform 0.8s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .about-portrait:hover .about-frame img {
+    transform: scale(1.04);
+  }
+}
+
+.about-badge {
+  position: absolute;
+  inset-block-end: -1.25rem;
+  inset-inline-start: -1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem 1.3rem;
+  border-radius: var(--radius);
+  background-color: #fff;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+  line-height: 1.1;
+}
+
+.about-badge small {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #62626d;
+}
+
+.about-badge strong {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #dc143c;
+}
+
+.about-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.about-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.about-social svg {
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.about-social.instagram svg {
+  color: #dd2a7b;
+}
+
+.about-social.facebook svg {
+  color: #1877f2;
+}
+
+.about-social:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .about-social:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  .about-social:hover svg {
+    color: #fff;
+  }
+
+  .about-social.instagram:hover {
+    background: linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%);
+  }
+
+  .about-social.facebook:hover {
+    background-color: #1877f2;
+  }
+}
+
+/* His story: the title holds still while the paragraphs scroll past it. */
+.about-story {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 7rem var(--gutter) 4rem;
+}
+
+.about-story-head {
+  position: sticky;
+  top: calc(var(--nav-h) + 2rem);
+  align-self: start;
+}
+
+.about-story-head h2 {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--heading-color);
+}
+
+.about-story-body p {
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.7;
+  color: var(--text-color);
+}
+
+.about-story-body p + p {
+  margin-top: 1.5rem;
+}
+
+.about-numbers {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 3rem;
+}
+
+.about-values {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4.5rem var(--gutter);
+}
+
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 1.25rem;
+}
+
+/* A real Google review that happens to be about him. */
+.about-quote {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem var(--gutter);
+  text-align: center;
+}
+
+.about-quote-mark {
+  margin-bottom: 1.25rem;
+  color: var(--secondary-color);
+}
+
+.about-quote blockquote {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--heading-color);
+}
+
+.about-quote figcaption {
+  margin-top: 1.5rem;
+  color: var(--muted-color);
+  font-weight: 600;
+}
+
+.about-quote figcaption strong {
+  color: var(--heading-color);
+}
+
+.about-quote figcaption a {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .about-quote figcaption a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.about-cta {
+  width: calc(min(1200px, 100%) - 2 * var(--gutter));
+  margin: 3rem auto 0;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+  border-radius: 32px;
+  text-align: center;
+  color: #fff;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 50%),
+    linear-gradient(135deg, var(--secondary-color), var(--brand-deep));
+  box-shadow: 0 30px 60px -28px var(--brand-glow);
+}
+
+.about-cta h2 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.about-cta p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+.about-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+/* A primary button for red backgrounds. */
+.btn-light {
+  background-color: #fff;
+  color: var(--brand-deep);
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.35);
+}
+
+@media (hover: hover) {
+  .btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px -10px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-light:hover .btn-arrow {
+    translate: 4px 0;
+  }
+
+  html[dir='rtl'] .btn-light:hover .btn-arrow {
+    translate: -4px 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Moving between the home page and the About page cross-fades instead of
+     flashing white. Both pages load this stylesheet, which is what opts the
+     navigation in. */
+  @view-transition {
+    navigation: auto;
+  }
+
+  /* The About hero plays in like the home hero does. */
+  .about-hero-text > * {
+    animation: hero-rise 1s var(--ease-out) backwards;
+  }
+
+  .about-hero-text > :nth-child(1) { animation-delay: 0.05s; }
+  .about-hero-text > :nth-child(2) { animation-delay: 0.12s; }
+  .about-hero-text > :nth-child(3) { animation-delay: 0.2s; }
+  .about-hero-text > :nth-child(4) { animation-delay: 0.3s; }
+  .about-hero-text > :nth-child(5) { animation-delay: 0.4s; }
+  .about-hero-text > :nth-child(6) { animation-delay: 0.5s; }
+
+  .about-frame {
+    animation: hero-unveil 1.2s var(--ease-out) 0.25s backwards;
+  }
+
+  .about-frame img {
+    animation: hero-settle 1.8s var(--ease-out) 0.25s backwards;
+  }
+
+  .about-portrait::before {
+    animation: about-card-in 1.2s var(--ease-out) 0.5s backwards;
+  }
+
+  .about-badge {
+    animation: hero-rise 1s var(--ease-out) 0.9s backwards;
+  }
+
+  .about-watermark {
+    animation: hero-rise 1.6s var(--ease-out) 0.2s backwards;
+  }
+}
+
+@keyframes about-card-in {
+  from {
+    opacity: 0;
+    rotate: 0deg;
+    translate: 0 0;
+  }
+}
+
+/* ==========================================================================
    Sections
    ========================================================================== */
 .services,
@@ -2244,6 +2745,28 @@ html[dir='rtl'] .scroll-progress {
     gap: 1.5rem;
   }
 
+  /* Photo under the text; the story title stops pinning. */
+  .about-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 3.5rem;
+  }
+
+  .about-portrait {
+    justify-self: center;
+    max-width: 380px;
+  }
+
+  .about-story {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-top: 5rem;
+  }
+
+  .about-story-head {
+    position: static;
+  }
+
   /* Wheel between the title and the steps, the way it reads on a phone. */
   .story-stage {
     grid-template-columns: 1fr;
@@ -2268,6 +2791,14 @@ html[dir='rtl'] .scroll-progress {
 
   .footer-brand {
     grid-column: 1 / -1;
+  }
+}
+
+/* Small tablets still show the full link row, which leaves no room for the
+   brand name; the logo already spells it out. */
+@media (min-width: 769px) and (max-width: 900px) {
+  .brand-name {
+    display: none;
   }
 }
 
@@ -2361,9 +2892,43 @@ html[dir='rtl'] .scroll-progress {
   .gallery,
   .testimonials,
   .contact,
-  .social-media {
+  .social-media,
+  .about-values,
+  .about-quote {
     padding: 3rem var(--gutter);
     margin-bottom: 0.5rem;
+  }
+
+  .about-hero {
+    margin-top: calc(var(--nav-h) + 0.25rem);
+    padding: 1.5rem 1.25rem 3rem;
+    border-radius: 24px;
+  }
+
+  .about-back {
+    margin-bottom: 1rem;
+  }
+
+  .about-story {
+    padding: 3.5rem var(--gutter) 2.5rem;
+  }
+
+  .about-cta {
+    border-radius: 24px;
+  }
+
+  /* The desktop badge and tilted card hang past the photo's edge, which on a
+     phone would run into the panel's padding. */
+  .about-badge {
+    inset-inline-start: 1rem;
+  }
+
+  .about-portrait::before {
+    translate: 0.6rem 0.6rem;
+  }
+
+  html[dir='rtl'] .about-portrait::before {
+    translate: -0.6rem 0.6rem;
   }
 
   .statement {
