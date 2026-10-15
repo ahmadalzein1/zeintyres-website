@@ -164,7 +164,7 @@ const translations = {
     values: [
       { title: 'Honest advice', text: 'He tells you what your car actually needs, and nothing it doesn\'t.' },
       { title: 'Fair prices', text: 'Clear prices for tyres, rims and repairs, with no surprises at the end.' },
-      { title: 'Day and night', text: 'The shop stays open 24/7, because a flat tyre never waits for business hours.' },
+      { title: 'Zein Tyres Establishment', text: 'Open 24/7, because a flat tyre never waits for business hours.' },
     ],
     aboutCtaTitle: 'Need tyres? Come and see us.',
     storyEyebrow: 'How it works',
@@ -272,7 +272,7 @@ const translations = {
     values: [
       { title: 'نصيحة صادقة', text: 'يقول لك ما تحتاجه سيارتك فعلاً، ولا شيء غير ذلك.' },
       { title: 'أسعار عادلة', text: 'أسعار واضحة للإطارات والجنوط والتصليحات، بلا مفاجآت في النهاية.' },
-      { title: 'ليلاً ونهاراً', text: 'المحل مفتوح 24/7، لأن الإطار المثقوب لا ينتظر ساعات العمل.' },
+      { title: 'مؤسسة زين تايرز', text: 'مفتوحة 24/7، لأن الإطار المثقوب لا ينتظر ساعات العمل.' },
     ],
     aboutCtaTitle: 'تحتاج إطارات؟ تفضّل لزيارتنا.',
     storyEyebrow: 'كيف نعمل',
