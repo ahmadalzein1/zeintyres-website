@@ -211,6 +211,7 @@ const translations = {
     tiktok: 'TikTok',
     copyright: '© 2026 Zein Tyres. All rights reserved.',
     professionalService: 'Professional tire service in Amchit, Lebanon',
+    home: 'Home',
     about: 'About',
     services: 'Services',
     gallery: 'Gallery',
@@ -319,6 +320,7 @@ const translations = {
     tiktok: 'تيك توك',
     copyright: '© 2026 زين تايرز. جميع الحقوق محفوظة.',
     professionalService: 'خدمة إطارات احترافية في عمشيت، لبنان',
+    home: 'الرئيسية',
     about: 'من نحن',
     services: 'الخدمات',
     gallery: 'المعرض',
@@ -978,7 +980,11 @@ function App() {
 
   // Full paths rather than bare #hashes, so the same links work from the
   // About page. On the home page Lenis still treats them as in-page anchors.
+  // Home is #top on the home page (nothing has that id, so Lenis glides to
+  // the very top) and is lit until the first listed section takes over.
+  const homeHref = IS_ABOUT ? HOME_URL : '#top'
   const navItems = [
+    { href: homeHref, label: t.home },
     { href: ABOUT_URL, label: t.about },
     { href: `${HOME_URL}#services`, label: t.services },
     { href: `${HOME_URL}#gallery`, label: t.gallery },
@@ -986,7 +992,10 @@ function App() {
     { href: `${HOME_URL}#contact`, label: t.contact },
     { href: `${HOME_URL}#social`, label: t.followUs },
   ]
-  const isActive = (href) => (IS_ABOUT ? href === ABOUT_URL : href === `${HOME_URL}#${activeSection}`)
+  const isActive = (href) => {
+    if (IS_ABOUT) return href === ABOUT_URL
+    return activeSection ? href === `${HOME_URL}#${activeSection}` : href === homeHref
+  }
   const navLinkProps = (href) => ({
     className: isActive(href) ? 'active' : undefined,
     'aria-current': isActive(href) ? (IS_ABOUT ? 'page' : 'true') : undefined,

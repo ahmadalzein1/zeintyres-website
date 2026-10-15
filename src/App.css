@@ -2824,11 +2824,28 @@ html[dir='rtl'] .scroll-progress {
   }
 }
 
+/* Seven links plus the wide "العربية" button only just fit before the
+   hamburger takes over; tighten the links until there is room to spare. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .nav-links {
+    gap: 0.1rem;
+  }
+
+  .nav-links a {
+    padding: 0.5rem 0.45rem;
+    font-size: 0.9rem;
+  }
+}
+
 /* Small tablets still show the full link row, which leaves no room for the
    brand name; the logo already spells it out. */
 @media (min-width: 769px) and (max-width: 900px) {
   .brand-name {
     display: none;
+  }
+
+  .language-toggle {
+    min-width: 0;
   }
 }
 
