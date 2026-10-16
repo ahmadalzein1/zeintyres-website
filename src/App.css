@@ -1223,12 +1223,6 @@ html[dir='rtl'] .about-portrait::before {
   padding: 4.5rem var(--gutter);
 }
 
-.about-values-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 1.25rem;
-}
-
 /* A real Google review that happens to be about him. */
 .about-quote {
   max-width: 900px;
@@ -2376,7 +2370,8 @@ html[dir='rtl'] .scroll-progress {
      The whole 3x2 grid has to fit on one screen, so this needs a wide and
      reasonably tall window; phones and tablets get the deck instead. */
   @media (prefers-reduced-motion: no-preference) and (min-width: 901px) and (min-height: 650px) {
-    section.services {
+    section.services,
+    section.about-values {
       padding-block: 0;
       margin-bottom: 0;
     }
@@ -2454,6 +2449,16 @@ html[dir='rtl'] .scroll-progress {
     .service-deal:nth-child(4) { --dx: 1;  --dy: -0.5; --tilt: 8deg;  z-index: 3; animation-range: contain 34% contain 68%; }
     .service-deal:nth-child(5) { --dx: 0;  --dy: -0.5; --tilt: -5deg; z-index: 2; animation-range: contain 44% contain 78%; }
     .service-deal:nth-child(6) { --dx: -1; --dy: -0.5; --tilt: 3deg;  z-index: 1; animation-range: contain 54% contain 88%; }
+
+    /* The About page's three values: one row, so the pile sits on the middle
+       card and the track is shorter. */
+    .about-values .services-track {
+      height: 200svh;
+    }
+
+    .about-values .service-deal:nth-child(1) { --dx: 1;  --dy: 0; --tilt: -3deg; z-index: 3; animation-range: contain 4% contain 48%; }
+    .about-values .service-deal:nth-child(2) { --dx: 0;  --dy: 0; --tilt: 5deg;  z-index: 2; animation-range: contain 24% contain 68%; }
+    .about-values .service-deal:nth-child(3) { --dx: -1; --dy: 0; --tilt: -7deg; z-index: 1; animation-range: contain 44% contain 88%; }
   }
 
   /* The deck (see Services as a deck, above): each card sinks back as the

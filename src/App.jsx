@@ -893,22 +893,29 @@ function AboutPage({ t, language, onWhatsApp }) {
         </div>
       </section>
 
+      {/* Pinned and dealt from a pile like the home page's Services. */}
       <section className="about-values">
-        <div className="section-header" data-reveal>
-          <span className="eyebrow">{t.valuesEyebrow}</span>
-          <h2>{t.valuesTitle}</h2>
-        </div>
-        <div className="about-values-grid">
-          {t.values.map((value, i) => {
-            const Icon = VALUE_ICONS[i]
-            return (
-              <div className="service-card" key={value.title} data-reveal data-spotlight>
-                <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
-                <h3>{value.title}</h3>
-                <p>{value.text}</p>
-              </div>
-            )
-          })}
+        <div className="services-track">
+          <div className="services-stage">
+            <div className="section-header" data-reveal>
+              <span className="eyebrow">{t.valuesEyebrow}</span>
+              <h2>{t.valuesTitle}</h2>
+            </div>
+            <div className="services-grid">
+              {t.values.map((value, i) => {
+                const Icon = VALUE_ICONS[i]
+                return (
+                  <div className="service-deal" key={value.title}>
+                    <div className="service-card" data-reveal data-spotlight>
+                      <span className="service-icon"><Icon size={28} aria-hidden="true" /></span>
+                      <h3>{value.title}</h3>
+                      <p>{value.text}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
