@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- /app/ - "get the app" for both phones. src/appRedirect.js sends an
+         iPhone to the App Store and an Android phone to Google Play (once
+         live, see src/appStores.js), and everything else to the home page's
+         app section. Not a real page, so search engines skip it. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0d0d10" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://www.zeintyres.com/#app" />
+    <title>Get the Zein Tyres app</title>
+
+    <!-- Shared links get a proper preview card. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zein Tyres" />
+    <meta property="og:url" content="https://www.zeintyres.com/app/" />
+    <meta property="og:title" content="Get the Zein Tyres app" />
+    <meta property="og:description" content="Send an SOS, book a service, or order tyres, rims, oils and batteries with free delivery anywhere in Lebanon." />
+    <meta property="og:image" content="https://www.zeintyres.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="module" src="/src/appRedirect.js"></script>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0d0d10; color: #fff;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+      a { color: #ff4d6d; }
+    </style>
+  </head>
+  <body>
+    <p>Opening the Zein Tyres app… <a href="/#app">Continue</a></p>
+  </body>
+</html>

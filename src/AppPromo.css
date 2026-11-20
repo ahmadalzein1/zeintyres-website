@@ -1,0 +1,745 @@
+/* ==========================================================================
+   Get the app (src/AppPromo.jsx)
+   A dark panel in both themes - like a product band - so the phone and the
+   store badges read as the thing to look at. Uses the site's tokens, type
+   scale, red glow and motion curves; everything else is local to here.
+   ========================================================================== */
+
+/* --- Hero link ----------------------------------------------------------- */
+.hero-app {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 0.95rem 0.4rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  color: var(--heading-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.25s ease,
+    box-shadow 0.3s var(--ease-out);
+}
+
+html[dir='rtl'] .hero-app {
+  padding: 0.4rem 0.45rem 0.4rem 0.95rem;
+}
+
+/* Inverted chip: dark with light logos, light with dark ones in dark mode. */
+.hero-app-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--heading-color);
+  color: var(--bg-color);
+}
+
+.hero-app-arrow {
+  color: var(--secondary-color);
+  flex-shrink: 0;
+  transition: translate 0.3s var(--ease-out);
+}
+
+html[dir='rtl'] .hero-app-arrow {
+  scale: -1 1;
+}
+
+@media (hover: hover) {
+  .hero-app:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 12px 28px -14px var(--brand-glow);
+  }
+
+  .hero-app:hover .hero-app-arrow {
+    translate: 3px 0;
+  }
+
+  html[dir='rtl'] .hero-app:hover .hero-app-arrow {
+    translate: -3px 0;
+  }
+}
+
+.hero-app:active {
+  transform: scale(0.98);
+}
+
+/* --- Section ------------------------------------------------------------- */
+.app-promo {
+  padding: 0 0 1rem;
+}
+
+.app-promo-panel {
+  --app-text: #fff;
+  --app-muted: rgba(255, 255, 255, 0.7);
+  --app-faint: rgba(255, 255, 255, 0.55);
+  --app-accent: #ff4d6d;
+  --app-line: rgba(255, 255, 255, 0.045);
+  --app-stroke: rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 3rem;
+  /* Same edges as the quick-info bar above it. */
+  width: calc(min(1200px, 100%) - 2 * var(--gutter));
+  margin: 0 auto;
+  /* The hand runs past the bottom padding (see .app-promo-visual). */
+  --app-pad-bottom: clamp(2rem, 5vw, 4.5rem);
+  padding: clamp(2rem, 5vw, 4.5rem);
+  padding-bottom: var(--app-pad-bottom);
+  border-radius: 32px;
+  color: var(--app-text);
+  background:
+    radial-gradient(55% 75% at 78% 45%, rgba(255, 23, 68, 0.3), transparent 65%),
+    radial-gradient(45% 60% at 0% 100%, rgba(255, 23, 68, 0.14), transparent 60%),
+    #0d0d10;
+  box-shadow: 0 40px 80px -40px rgba(16, 16, 20, 0.6);
+}
+
+:root[data-theme='dark'] .app-promo-panel {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 40px 80px -40px rgba(0, 0, 0, 0.9);
+}
+
+/* A faint line grid that fades out towards the edges. Decoration only. */
+.app-promo-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--app-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--app-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(75% 75% at 50% 50%, #000, transparent);
+  pointer-events: none;
+}
+
+/* --- Copy ---------------------------------------------------------------- */
+.app-promo .eyebrow {
+  color: var(--app-accent);
+}
+
+.app-promo h2 {
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--app-text);
+  margin-bottom: 1.1rem;
+}
+
+/* Its own line, so the break always falls after the comma. */
+.app-promo-accent {
+  display: block;
+  width: fit-content;
+  background: linear-gradient(90deg, #ff4d6d, #ff1744);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.app-promo-lede {
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--app-muted);
+}
+
+.app-features {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.75rem;
+  margin: 2.25rem 0 2.5rem;
+}
+
+.app-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Same tile as the Services cards' .service-icon, in its dark-theme colours
+   (the panel is dark in both themes). */
+.app-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  color: #ff1744;
+  background-color: rgba(255, 23, 68, 0.1);
+}
+
+.app-features strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.app-features li > span:last-child > span {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--app-faint);
+}
+
+/* --- Store badges -------------------------------------------------------- */
+.app-cta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem 1.5rem;
+}
+
+.store-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+/* Black, like the official badges, with the official wording. */
+.store-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 58px;
+  padding: 0.55rem 1.35rem 0.55rem 1rem;
+  border-radius: 14px;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  text-decoration: none;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.25s ease,
+    box-shadow 0.3s var(--ease-out);
+}
+
+html[dir='rtl'] .store-badge {
+  padding: 0.55rem 1rem 0.55rem 1.35rem;
+}
+
+.store-badge svg {
+  flex-shrink: 0;
+}
+
+.store-badge-text {
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+}
+
+.store-badge-text small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.15;
+  opacity: 0.88;
+}
+
+.store-badge-text strong {
+  font-size: 1.32rem;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  a.store-badge:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 18px 32px -14px rgba(0, 0, 0, 0.9), 0 0 0 4px rgba(255, 77, 109, 0.15);
+  }
+}
+
+a.store-badge:active {
+  transform: scale(0.98);
+}
+
+/* --- QR (big screens, once a store is live) ------------------------------ */
+.app-qr {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.55rem 1rem 0.55rem 0.55rem;
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--app-stroke);
+}
+
+.app-qr-code {
+  width: 78px;
+  height: 78px;
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+.app-qr strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.app-qr span {
+  display: block;
+  max-width: 16ch;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--app-faint);
+}
+
+/* A phone can't scan its own screen. */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .app-qr {
+    display: none;
+  }
+}
+
+.app-note {
+  margin-top: 1.1rem;
+  font-size: 0.88rem;
+  color: var(--app-faint);
+}
+
+/* --- Visual: the hand holding the phone ---------------------------------- */
+/* Sits on the bottom of the panel and runs out past its edge (the panel
+   clips it), so the wrist is never seen to end - even at the top of the
+   float. --hand-bleed is how far below the panel the image reaches. */
+.app-promo-visual {
+  --hand-bleed: 70px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  align-self: end;
+  margin-bottom: calc(-1 * var(--app-pad-bottom) - var(--hand-bleed));
+}
+
+/* Rings and glow, centred on the phone's screen (about 40% down the image). */
+.app-orbit {
+  position: absolute;
+  z-index: -1;
+  top: 38%;
+  left: 50%;
+  translate: -50% -50%;
+  width: min(560px, 130%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: radial-gradient(closest-side, rgba(255, 23, 68, 0.34), transparent 72%);
+  pointer-events: none;
+}
+
+.app-orbit::before,
+.app-orbit::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.app-orbit::before {
+  inset: 13%;
+}
+
+.app-orbit::after {
+  inset: 27%;
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.app-hand {
+  position: relative;
+  width: min(100%, 430px);
+  /* The photo's own proportions (791 x 1336 after trimming). */
+  aspect-ratio: 791 / 1336;
+}
+
+/* What floats: the hand, the phone and its screen move as one. */
+.app-hand-float {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  /* Its own GPU layer, so the float never repaints the photo. */
+  will-change: transform;
+}
+
+.app-hand-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The phone's display, laid exactly over the photo's black screen. All
+   numbers are shares of the image, measured from it, so it stays aligned
+   at every size. */
+.app-hand-screen {
+  position: absolute;
+  left: 26.549%;
+  top: 1.722%;
+  width: 59.166%;
+  height: 76.647%;
+  overflow: hidden;
+  border-radius: 14.103% / 6.445%;
+  background-color: #000;
+  color: #fff;
+  /* Contents are sized in cqw - shares of the screen width. */
+  container-type: inline-size;
+  font-family: var(--font-sans);
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.7);
+}
+
+.app-hand-screen :where(b, span, small) {
+  letter-spacing: normal;
+}
+
+/* The app's welcome screen: the wet-road photo under a 35% black scrim
+   (WelcomeBackground in the app), slightly darker at the top for the
+   status bar. */
+.app-hand-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Plus a soft dark pool behind the logo, so it reads cleanly over the
+   busy middle of the photo. */
+.app-hand-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 30% at 50% 46%, rgba(0, 0, 0, 0.5), transparent 75%),
+    linear-gradient(rgba(0, 0, 0, 0.35), transparent 14%),
+    rgba(0, 0, 0, 0.35);
+}
+
+.app-hand-status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 12.5cqw;
+  padding: 1.2cqw 8cqw 0 9.5cqw;
+  font-size: 4.1cqw;
+  font-weight: 700;
+}
+
+.app-hand-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+}
+
+/* Four signal bars, drawn with gradients. */
+.app-hand-signal {
+  width: 5.2cqw;
+  height: 3.4cqw;
+  background:
+    linear-gradient(#fff, #fff) 0 100% / 18% 40% no-repeat,
+    linear-gradient(#fff, #fff) 33% 100% / 18% 60% no-repeat,
+    linear-gradient(#fff, #fff) 66% 100% / 18% 80% no-repeat,
+    linear-gradient(#fff, #fff) 100% 100% / 18% 100% no-repeat;
+}
+
+.app-hand-battery {
+  position: relative;
+  width: 7.2cqw;
+  height: 3.6cqw;
+  border-radius: 1.1cqw;
+  border: 0.45cqw solid rgba(255, 255, 255, 0.5);
+}
+
+.app-hand-battery::after {
+  content: '';
+  position: absolute;
+  inset: 0.45cqw;
+  right: 1.4cqw;
+  border-radius: 0.5cqw;
+  background-color: #fff;
+}
+
+/* Logo, "Premium Quality" and the line under it, at the app's sizes (the
+   logo 78% of the width), centred a touch above the middle like the app's
+   splash, so the logo is the first thing seen. */
+.app-hand-welcome {
+  position: absolute;
+  top: 47%;
+  left: 6cqw;
+  right: 6cqw;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-hand-logo {
+  width: 78cqw;
+  height: auto;
+  filter: drop-shadow(0 2cqw 5cqw rgba(0, 0, 0, 0.55));
+}
+
+.app-hand-welcome b {
+  margin-top: 6cqw;
+  font-size: 7.6cqw;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.25cqw;
+}
+
+.app-hand-welcome span {
+  margin-top: 1.6cqw;
+  font-size: 3.6cqw;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* An iOS notification banner, just under the island, at iOS proportions:
+   frosted dark glass, the app icon, and a two-line message. It drops in,
+   waits and slides away (under Motion); without motion it simply stays. */
+.app-hand-notif {
+  position: absolute;
+  z-index: 1;
+  top: 13cqw;
+  left: 3.2cqw;
+  right: 3.2cqw;
+  display: flex;
+  align-items: center;
+  gap: 2.8cqw;
+  padding: 3cqw 3.4cqw;
+  border-radius: 6.2cqw;
+  background-color: rgba(38, 38, 42, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 2cqw 6cqw rgba(0, 0, 0, 0.35);
+  text-align: left;
+}
+
+.app-hand-notif img {
+  width: 9.6cqw;
+  height: 9.6cqw;
+  flex-shrink: 0;
+  border-radius: 2.3cqw;
+  background-color: #fff;
+}
+
+.app-hand-notif > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-hand-notif small {
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.7cqw;
+  font-weight: 700;
+  letter-spacing: 0.3cqw;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.app-hand-notif small em {
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+.app-hand-notif b {
+  display: block;
+  margin-top: 0.6cqw;
+  font-size: 3.5cqw;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.app-hand-notif b + span {
+  display: block;
+  font-size: 3.1cqw;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* The photo's own island, drawn back on top of the new screen. */
+.app-hand-island {
+  position: absolute;
+  z-index: 3;
+  left: 35.897%;
+  top: 1.465%;
+  width: 28.419%;
+  height: 4.004%;
+  border-radius: 999px;
+  background: radial-gradient(circle at 84% 50%, #1c2c4f 0 7%, #0a101d 12%, #000 18%);
+}
+
+/* iOS's home bar along the bottom edge, as on a real screenshot. */
+.app-hand-home-bar {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 2.2cqw;
+  translate: -50% 0;
+  width: 34cqw;
+  height: 1.3cqw;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Glass: a soft fixed reflection, plus a highlight that sweeps across now
+   and then (under Motion). */
+.app-hand-glare {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.03) 26%, transparent 42%);
+  pointer-events: none;
+}
+
+.app-hand-glare::after {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+  translate: -70% 0;
+}
+
+/* --- Motion -------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* The hand rises and settles, with a hint of sway from the wrist. */
+  .app-hand-float {
+    animation: app-hand-float 6s ease-in-out infinite;
+  }
+
+  .app-hand-glare::after {
+    animation: app-glare-sweep 7s ease-in-out 1.5s infinite;
+  }
+
+  .app-hand-notif {
+    animation: app-notif-drop 9s cubic-bezier(0.32, 0.72, 0, 1) 1s infinite both;
+  }
+
+  .hero-content > :nth-child(8) {
+    animation-delay: 0.76s;
+  }
+}
+
+@keyframes app-hand-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.6deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(0.6deg);
+  }
+}
+
+/* Hidden above the screen → drops in → stays ~5s → slides back up. */
+@keyframes app-notif-drop {
+  0%,
+  6% {
+    translate: 0 -160%;
+    opacity: 0;
+  }
+  14%,
+  70% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  78%,
+  100% {
+    translate: 0 -160%;
+    opacity: 0;
+  }
+}
+
+@keyframes app-glare-sweep {
+  0%,
+  55% {
+    translate: -70% 0;
+  }
+  100% {
+    translate: 70% 0;
+  }
+}
+
+/* --- Smaller screens ----------------------------------------------------- */
+@media (max-width: 1100px) {
+  .app-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-promo-panel {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    border-radius: 28px;
+  }
+
+  .app-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-promo-visual {
+    margin-top: 1rem;
+  }
+
+  .app-hand {
+    width: min(100%, 420px);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-promo-panel {
+    --app-pad-bottom: 1.75rem;
+    padding: 2.25rem 1.25rem var(--app-pad-bottom);
+    border-radius: 24px;
+  }
+
+  .app-features {
+    grid-template-columns: 1fr;
+    margin: 1.75rem 0 2rem;
+  }
+
+  /* Badges share the row, or each take a full row on narrow phones. */
+  .store-badges {
+    width: 100%;
+  }
+
+  .store-badge {
+    flex: 1 1 170px;
+    justify-content: center;
+  }
+
+  .app-promo-visual {
+    --hand-bleed: 50px;
+    margin-top: 3.5rem;
+  }
+
+  .app-hand {
+    width: min(100%, 360px);
+  }
+}

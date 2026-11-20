@@ -28,6 +28,7 @@ import {
   X,
 } from 'lucide-react'
 import './App.css'
+import { AppPromo, HeroAppLink } from './AppPromo.jsx'
 import logoDark from './assets/darkmode.png'
 import logoLight from './assets/lightmode.png'
 import shopPhoto from './assets/download.jpg'
@@ -80,12 +81,17 @@ const OWNER = {
   facebook: 'https://www.facebook.com/abdul.karim.a.el.zein',
 }
 
-// The site is two documents built from this one App: index.html is the home
-// page and about/index.html the owner's page. A folder with its own
-// index.html serves at /about/ on any static host, with no rewrite rules.
+// The site is three documents built from this one App: index.html is the
+// home page, about/index.html the owner's page and privacy/index.html the
+// app's privacy policy. A folder with its own index.html serves at /about/
+// (or /privacy/) on any static host, with no rewrite rules.
 const HOME_URL = import.meta.env.BASE_URL
 const ABOUT_URL = `${HOME_URL}about/`
+const PRIVACY_URL = `${HOME_URL}privacy/`
 const IS_ABOUT = /\/about(\/|\/index\.html)?$/.test(window.location.pathname)
+const IS_PRIVACY = /\/privacy(\/|\/index\.html)?$/.test(window.location.pathname)
+// Any page that isn't the home page: links point home instead of #anchors.
+const IS_SUBPAGE = IS_ABOUT || IS_PRIVACY
 
 // Facebook Logo Component
 const FacebookLogo = ({ size = 40 }) => (
@@ -220,7 +226,69 @@ const translations = {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     darkModeLabel: 'Switch to dark mode',
-    lightModeLabel: 'Switch to light mode'
+    lightModeLabel: 'Switch to light mode',
+    // Get the app (src/AppPromo.jsx)
+    appHeroLink: 'Get the Zein Tyres app',
+    appEyebrow: 'The Zein Tyres app',
+    appTitleA: 'Your tyre shop,',
+    appTitleB: 'in your pocket.',
+    appDesc: 'Send an SOS, book a service, or order tyres, rims, oils and batteries — any time, from anywhere in Lebanon.',
+    appFeatures: [
+      { title: 'SOS in one tap', text: 'Every technician is alerted at once. Watch yours arrive on the map.' },
+      { title: 'Book a service 24/7', text: 'Pick a time that suits you — we’re open around the clock.' },
+      { title: 'Tyres, rims, oils & batteries', text: 'Free pickup at the shop, or free delivery anywhere in Lebanon.' },
+      { title: 'Safe card payment', text: 'Visa and Mastercard, processed securely. We never see your card.' },
+    ],
+    appStoreSmall: 'Download on the',
+    playSmall: 'GET IT ON',
+    appFree: 'Free to download for iPhone and Android.',
+    appScanTitle: 'Scan to download',
+    appScanText: 'Point your phone’s camera at the code.',
+    privacyLink: 'Privacy Policy',
+    // The Zein Tyres app's privacy policy. This is the ONLY copy: the app
+    // opens this page (mobileApp/src/lib/legal.ts), and so do the App Store
+    // and Google Play listings, so an edit here reaches all three.
+    privacy: {
+      eyebrow: 'Zein Tyres app',
+      title: 'Privacy Policy',
+      lede: 'How the Zein Tyres app collects, uses and deletes your information.',
+      sections: [
+        {
+          heading: '1. Information We Collect',
+          body: 'We collect the details you give us — such as your name, email, phone number, delivery address and vehicle information — and information created as you use the app, like orders and service bookings.',
+        },
+        {
+          heading: '2. How We Use It',
+          body: 'We use your information to create and manage your account, process orders and bookings, provide support, and improve the app. We may contact you about your orders and appointments.',
+        },
+        {
+          heading: '3. Sign-In Providers',
+          body: 'If you sign in with Apple, Google, phone or email, we receive basic account details from that provider to identify you. We do not receive your provider password.',
+        },
+        {
+          heading: '4. Sharing',
+          body: 'We do not sell your personal information. We share it only with service providers who help us operate the app (such as payment, hosting and messaging providers) and where required by law.',
+        },
+        {
+          heading: '5. Data Retention',
+          body: 'We keep your information for as long as your account is active. When you delete your account, we keep records of past orders, payments and bookings for our accounts and legal obligations, with your name, phone number, notes and exact location removed.',
+        },
+        {
+          heading: '6. Your Choices',
+          body: 'You can review and update your profile in the app. You can delete your account at any time from Profile → Delete Account, which permanently removes your account, profile, photo and saved cars. You can also ask us to delete it by contacting us.',
+        },
+        {
+          heading: '7. Security',
+          body: 'We take reasonable measures to protect your information, but no method of transmission or storage is completely secure.',
+        },
+      ],
+      contactHeading: '8. Contact',
+      contactBody: 'For privacy questions or requests, contact Zein Tyres:',
+      deleteHeading: 'Deleting your account',
+      deleteSteps: ['Open the Zein Tyres app and sign in.', 'Go to Profile → Delete Account and confirm.'],
+      deleteWhat: 'Your account, profile, photo and saved cars are deleted straight away. Records of past orders, payments and bookings are kept for our accounts, without your name, phone number, notes or exact location.',
+      deleteNoApp: 'Can’t use the app? Contact us on WhatsApp or by email from the phone number or email on your account, and we’ll delete it for you.',
+    },
   },
   ar: {
     welcome: 'أهلا و سهلا ب',
@@ -329,7 +397,65 @@ const translations = {
     openMenu: 'افتح القائمة',
     closeMenu: 'أغلق القائمة',
     darkModeLabel: 'التبديل إلى الوضع الليلي',
-    lightModeLabel: 'التبديل إلى الوضع النهاري'
+    lightModeLabel: 'التبديل إلى الوضع النهاري',
+    appHeroLink: 'حمّل تطبيق زين تايرز',
+    appEyebrow: 'تطبيق زين تايرز',
+    appTitleA: 'محل الإطارات،',
+    appTitleB: 'في جيبك.',
+    appDesc: 'اطلب النجدة، احجز خدمة، أو اطلب الإطارات والجنوط والزيوت والبطاريات — في أي وقت ومن أي مكان في لبنان.',
+    appFeatures: [
+      { title: 'نجدة بلمسة واحدة', text: 'ننبّه كل الفنيين في الوقت نفسه، وتتابع وصول فنيّك على الخريطة.' },
+      { title: 'احجز خدمة 24/7', text: 'اختر الوقت الذي يناسبك — نحن مفتوحون على مدار الساعة.' },
+      { title: 'إطارات، جنوط، زيوت وبطاريات', text: 'استلام مجاني من المحل، أو توصيل مجاني إلى أي مكان في لبنان.' },
+      { title: 'دفع آمن بالبطاقة', text: 'فيزا وماستركارد بمعالجة آمنة. لا نرى بيانات بطاقتك أبداً.' },
+    ],
+    appStoreSmall: 'حمّله من',
+    playSmall: 'احصل عليه من',
+    appFree: 'تحميل مجاني لأجهزة آيفون وأندرويد.',
+    appScanTitle: 'امسح للتحميل',
+    appScanText: 'وجّه كاميرا هاتفك إلى الرمز.',
+    privacyLink: 'سياسة الخصوصية',
+    privacy: {
+      eyebrow: 'تطبيق زين تايرز',
+      title: 'سياسة الخصوصية',
+      lede: 'كيف يجمع تطبيق زين تايرز معلوماتك ويستخدمها ويحذفها.',
+      sections: [
+        {
+          heading: '1. المعلومات التي نجمعها',
+          body: 'نجمع المعلومات التي تقدّمها لنا — مثل اسمك وبريدك الإلكتروني ورقم هاتفك وعنوان التوصيل ومعلومات سيارتك — والمعلومات التي تنشأ أثناء استخدامك للتطبيق، مثل الطلبات وحجوزات الخدمة.',
+        },
+        {
+          heading: '2. كيف نستخدمها',
+          body: 'نستخدم معلوماتك لإنشاء حسابك وإدارته، ومعالجة الطلبات والحجوزات، وتقديم الدعم، وتحسين التطبيق. وقد نتواصل معك بخصوص طلباتك ومواعيدك.',
+        },
+        {
+          heading: '3. مزوّدو تسجيل الدخول',
+          body: 'إذا سجّلت الدخول عبر Apple أو Google أو الهاتف أو البريد الإلكتروني، نتلقّى من ذلك المزوّد معلومات أساسية عن حسابك للتعرّف عليك. ولا نتلقّى كلمة المرور الخاصة بك لدى المزوّد.',
+        },
+        {
+          heading: '4. المشاركة',
+          body: 'لا نبيع معلوماتك الشخصية. نشاركها فقط مع مزوّدي الخدمات الذين يساعدوننا في تشغيل التطبيق (مثل مزوّدي الدفع والاستضافة والرسائل) وعندما يفرض القانون ذلك.',
+        },
+        {
+          heading: '5. الاحتفاظ بالبيانات',
+          body: 'نحتفظ بمعلوماتك طالما أن حسابك نشط. عند حذف حسابك، نحتفظ بسجلات الطلبات والمدفوعات والحجوزات السابقة لأغراض المحاسبة والالتزامات القانونية، بعد إزالة اسمك ورقم هاتفك وملاحظاتك وموقعك الدقيق منها.',
+        },
+        {
+          heading: '6. خياراتك',
+          body: 'يمكنك مراجعة ملفك الشخصي وتعديله في التطبيق. ويمكنك حذف حسابك في أي وقت من الملف الشخصي ← حذف الحساب، فيُحذف حسابك وملفك الشخصي وصورتك وسياراتك المحفوظة نهائياً. كما يمكنك أن تطلب منا حذفه بالتواصل معنا.',
+        },
+        {
+          heading: '7. الأمان',
+          body: 'نتّخذ تدابير معقولة لحماية معلوماتك، لكن لا توجد وسيلة نقل أو تخزين آمنة تماماً.',
+        },
+      ],
+      contactHeading: '8. التواصل',
+      contactBody: 'لأي أسئلة أو طلبات تتعلّق بالخصوصية، تواصل مع زين تايرز:',
+      deleteHeading: 'حذف حسابك',
+      deleteSteps: ['افتح تطبيق زين تايرز وسجّل الدخول.', 'اذهب إلى الملف الشخصي ← حذف الحساب وأكّد.'],
+      deleteWhat: 'يُحذف حسابك وملفك الشخصي وصورتك وسياراتك المحفوظة فوراً. ونحتفظ بسجلات الطلبات والمدفوعات والحجوزات السابقة لأغراض المحاسبة، من دون اسمك أو رقم هاتفك أو ملاحظاتك أو موقعك الدقيق.',
+      deleteNoApp: 'لا يمكنك استخدام التطبيق؟ تواصل معنا عبر واتساب أو البريد الإلكتروني من رقم الهاتف أو البريد المسجّل في حسابك، وسنحذفه لك.',
+    },
   }
 }
 
@@ -947,6 +1073,60 @@ function AboutPage({ t, language, onWhatsApp }) {
   )
 }
 
+// The app's privacy policy. Plain reading page between the shared navbar and
+// footer; the #delete-account box is the link Google Play asks for.
+function PrivacyPage({ t }) {
+  const p = t.privacy
+  return (
+    <main className="privacy-page">
+      <a href={HOME_URL} className="privacy-back">
+        <ArrowLeft size={18} aria-hidden="true" />
+        {t.backHome}
+      </a>
+      <span className="eyebrow">{p.eyebrow}</span>
+      <h1>{p.title}</h1>
+      <p className="privacy-lede">{p.lede}</p>
+
+      {p.sections.map((s) => (
+        <section key={s.heading}>
+          <h2>{s.heading}</h2>
+          <p>{s.body}</p>
+        </section>
+      ))}
+
+      <section>
+        <h2>{p.contactHeading}</h2>
+        <p>{p.contactBody}</p>
+        <ul className="privacy-contact">
+          <li>
+            <a href={`https://wa.me/${PHONE.e164}`} target="_blank" rel="noopener noreferrer">
+              <MessageCircle size={18} aria-hidden="true" />
+              <span dir="ltr">{PHONE.intl}</span>
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${EMAIL.support}`}>
+              <Mail size={18} aria-hidden="true" />
+              <span>{EMAIL.support}</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section id="delete-account" className="privacy-delete">
+        <h2>{p.deleteHeading}</h2>
+        <ol>
+          {p.deleteSteps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+        <p>{p.deleteWhat}</p>
+        <p>{p.deleteNoApp}</p>
+      </section>
+    </main>
+  )
+}
+
 function App() {
   // An explicit choice wins; otherwise follow the device's light/dark setting.
   const [darkMode, setDarkMode] = useState(() => {
@@ -989,7 +1169,7 @@ function App() {
   // About page. On the home page Lenis still treats them as in-page anchors.
   // Home is #top on the home page (nothing has that id, so Lenis glides to
   // the very top) and is lit until the first listed section takes over.
-  const homeHref = IS_ABOUT ? HOME_URL : '#top'
+  const homeHref = IS_SUBPAGE ? HOME_URL : '#top'
   const navItems = [
     { href: homeHref, label: t.home },
     { href: ABOUT_URL, label: t.about },
@@ -1001,6 +1181,8 @@ function App() {
   ]
   const isActive = (href) => {
     if (IS_ABOUT) return href === ABOUT_URL
+    // The privacy page isn't in the nav, so nothing is lit there.
+    if (IS_PRIVACY) return false
     return activeSection ? href === `${HOME_URL}#${activeSection}` : href === homeHref
   }
   const navLinkProps = (href) => ({
@@ -1016,8 +1198,9 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Arriving from the About page on a section link (/#services): the browser
-  // looks for the section before React has drawn it, so jump there now.
+  // Arriving on a #link (/#services from the About page, or the app stores'
+  // /privacy/#delete-account): the browser looks for the target before React
+  // has drawn it, so jump there now.
   useEffect(() => {
     if (IS_ABOUT || !window.location.hash) return
     document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView()
@@ -1075,7 +1258,7 @@ function App() {
         <div className="navbar-container">
           {/* No element has id="top", so Lenis glides to the very top. From
               the About page the logo goes home. */}
-          <a href={IS_ABOUT ? HOME_URL : '#top'} className="logo-section" onClick={() => setMenuOpen(false)}>
+          <a href={IS_SUBPAGE ? HOME_URL : '#top'} className="logo-section" onClick={() => setMenuOpen(false)}>
             <img src={darkMode ? logoDark : logoLight} alt="Zein Tyres Logo" className="logo" />
             <h1 className="brand-name">Zein Tyres</h1>
           </a>
@@ -1136,6 +1319,8 @@ function App() {
 
       {IS_ABOUT ? (
         <AboutPage t={t} language={language} onWhatsApp={handleWhatsApp} />
+      ) : IS_PRIVACY ? (
+        <PrivacyPage t={t} />
       ) : (
         <>
           {/* Hero Section */}
@@ -1163,6 +1348,7 @@ function App() {
                   {t.whatsappBtn}
                 </button>
               </div>
+              <HeroAppLink t={t} />
               <p className="location-badge">
                 <MapPin size={18} aria-hidden="true" />
                 {t.location}
@@ -1198,6 +1384,9 @@ function App() {
               <p>{t.weComeToYou}</p>
             </div>
           </section>
+
+          {/* Get the app */}
+          <AppPromo t={t} />
 
           {/* Statement - lights up word by word as it scrolls past */}
           <section className="statement">
@@ -1456,6 +1645,7 @@ function App() {
         </div>
         <div className="footer-bottom">
           <p>{t.copyright}</p>
+          <p><a href={PRIVACY_URL}>{t.privacyLink}</a></p>
         </div>
       </footer>
     </div>

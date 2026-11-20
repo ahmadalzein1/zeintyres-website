@@ -2164,6 +2164,140 @@ html[dir='rtl'] .story-progress span::after {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
+  /* Copyright on one side, the privacy link on the other; stacked when narrow. */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.footer-bottom a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .footer-bottom a:hover {
+    color: #fff;
+  }
+}
+
+/* ==========================================================================
+   Privacy policy (/privacy/)
+   A plain reading page: one narrow column, the site's type and colours.
+   ========================================================================== */
+.privacy-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + 3rem) var(--gutter) 5rem;
+}
+
+.privacy-back {
+  /* Its own line, so the eyebrow below doesn't sit beside it. */
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin-bottom: 1.5rem;
+  color: var(--muted-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+html[dir='rtl'] .privacy-back svg {
+  scale: -1 1;
+}
+
+@media (hover: hover) {
+  .privacy-back:hover {
+    color: var(--heading-color);
+  }
+}
+
+.privacy-page h1 {
+  font-size: clamp(2.2rem, 6vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--heading-color);
+}
+
+.privacy-lede {
+  margin-top: 0.75rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--muted-color);
+}
+
+.privacy-page section {
+  margin-top: 2.25rem;
+  /* Clear the fixed navbar when jumped to by #link. */
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
+}
+
+.privacy-page h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--heading-color);
+}
+
+.privacy-page section p,
+.privacy-page section li {
+  margin-top: 0.5rem;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--text-color);
+}
+
+.privacy-contact {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.privacy-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--heading-color);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.privacy-contact a svg {
+  color: var(--secondary-color);
+}
+
+@media (hover: hover) {
+  .privacy-contact a:hover {
+    border-color: var(--secondary-color);
+    background-color: var(--brand-tint);
+  }
+}
+
+.privacy-delete {
+  padding: 1.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.privacy-delete ol {
+  padding-inline-start: 1.25rem;
 }
 
 /* ==========================================================================

@@ -5,11 +5,14 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   build: {
-    // Two pages: the home page and /about/. Both load the same app.
+    // Three pages - the home page, /about/ and /privacy/ - all loading the
+    // same app, plus /app/, a tiny "get the app" redirect (src/appRedirect.js).
     rolldownOptions: {
       input: {
         main: 'index.html',
         about: 'about/index.html',
+        privacy: 'privacy/index.html',
+        app: 'app/index.html',
       },
     },
   },
